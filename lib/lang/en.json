@@ -1,0 +1,14 @@
+{
+    "all": "All",
+    "vegetables": "Vegetables",
+    "fruits": "Fruits",
+    "herbs": "Herbs",
+    
+    "home": "Home",
+    "favorites": "Favorites",
+    "cart": "Cart",
+    "profile": "Profile",
+    
+    "addToCart": "Add to cart"
+
+}
