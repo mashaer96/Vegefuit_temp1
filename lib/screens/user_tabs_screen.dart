@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../localization/demo_localization.dart';
-import '../screens/products_overview_screen.dart';
-import '../screens/profile_screen.dart';
-import './cart_screen.dart';
-import './favorites_screen.dart';
+import 'products_overview_screen.dart';
+import 'profile_screen.dart';
+import 'cart_screen.dart';
+import 'favorites_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -26,6 +26,7 @@ class _TabsScreenState extends State<TabsScreen> {
       _selectedScreenIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +38,7 @@ class _TabsScreenState extends State<TabsScreen> {
             0.11,
         child: BottomNavigationBar(
           onTap: _selectScreen,
+          elevation: 20,
           selectedItemColor: Theme.of(context).primaryColor,
           unselectedItemColor: Colors.grey,
           currentIndex: _selectedScreenIndex,

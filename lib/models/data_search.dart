@@ -83,7 +83,7 @@ class DataSearch extends SearchDelegate<String> {
         : _productsList
             .where((p) => (isArabic(context)
                 ? p.titleAr.startsWith(query)
-                : p.titleEn.startsWith(query)))
+                : p.titleEn.startsWith(query.toUpperCase())))
             .toList();
     return ListView.builder(
       itemBuilder: (context, i) => ListTile(
@@ -95,7 +95,7 @@ class DataSearch extends SearchDelegate<String> {
           text: TextSpan(
             text: isArabic(context)
                 ? _suggestionList[i].titleAr.substring(0, query.length)
-                : _suggestionList[i].titleEn.substring(0, query.length),
+                : _suggestionList[i].titleEn.substring(0, query.length).toUpperCase(),
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,

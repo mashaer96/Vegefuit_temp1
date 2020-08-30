@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
-import '../localization/demo_localization.dart';
+
+import '../widgets/hedear.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          getTranslated(context, 'profile').toString(),
+      backgroundColor: Theme.of(context).canvasColor,
+      body: Container(
+        width: (MediaQuery.of(context).size.width) * 1.0,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Header("profile"),
+          ],
         ),
       ),
-      body: Center(child: (Text('This is the favorites screen'))),
     );
   }
 }

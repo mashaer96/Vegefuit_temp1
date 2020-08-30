@@ -1,14 +1,30 @@
 {
-    "all": "All",
-    "vegetables": "Vegetables",
-    "fruits": "Fruits",
-    "herbs": "Herbs",
-    
-    "home": "Home",
-    "favorites": "Favorites",
-    "cart": "Cart",
-    "profile": "Profile",
-    
-    "addToCart": "Add to cart"
+  "all": "All",
+  "vegetables": "Vegetables",
+  "fruits": "Fruits",
+  "herbs": "Herbs",
 
+  "home": "Home",
+  "favorites": "Favorites",
+  "cart": "Cart",
+  "profile": "Profile",
+
+  "addToCart": "Add to cart",
+
+  "shoppingCart": "Shopping Cart",
+  "total": "Total",
+  "orderNow": "Order Now",
+
+  "done": "Done",
+  "showAdded": "Added Products",
+
+  "stock": "Stock",
+  "orders": " Orders",
+  "newProduct": "New Product",
+  "currentStock": "Current Stock",
+
+  "title": "Product Title",
+  "priceDescription": "Unit",
+  "price": "Price",
+  "save": "Save"
 }

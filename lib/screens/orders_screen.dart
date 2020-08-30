@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/hedear.dart';
+import 'package:vegefruit/widgets/hedear.dart';
 
-class FavoritesScreen extends StatelessWidget {
+class OrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +12,7 @@ class FavoritesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Header('favorites'),
+            Header('orders'),
           ],
         ),
       ),

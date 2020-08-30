@@ -1,14 +1,30 @@
 {
-    "all": "الكل",
-    "vegetables": "خضروات",
-    "fruits": "فواكه",
-    "herbs": "ورقيات",
+  "all": "الكل",
+  "vegetables": "خضروات",
+  "fruits": "فواكه",
+  "herbs": "ورقيات",
 
-    "home": "الرئيسية",
-    "favorites": "المفضلة",
-    "cart": "العربة",
-    "profile": "حسابي",
+  "home": "الرئيسية",
+  "favorites": "المفضلة",
+  "cart": "العربة",
+  "profile": "حسابي",
 
-    "addToCart": "إضافة إلى العربة"
+  "addToCart": "إضافة إلى العربة",
 
+  "shoppingCart": "عربة التسوق",
+  "total": "المجموع",
+  "orderNow": "اطلب الآن",
+
+  "done": "تم",
+  "showAdded": "المنتجات المضافة",
+
+  "stock": "المخزون",
+  "orders": " الطلبات",
+  "newProduct": "منتج جديد",
+  "currentStock": "المخزون المتوفر",
+
+  "title": "اسم المنتج",
+  "priceDescription": "وحدة القياس",
+  "price": "السعر",
+  "save": "حفظ"
 }

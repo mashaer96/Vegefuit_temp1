@@ -47,7 +47,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'صندوق كبير',
     imageUrl: 'assets/images/mango.png',
     type: Type.Fruits,
-    isFavorite: true,
   ),
   Product(
     id: 'p5',
@@ -60,7 +59,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'صندوق صغير',
     imageUrl: 'assets/images/cactus.png',
     type: Type.Fruits,
-    isFavorite: false,
   ),
   Product(
     id: 'p6',
@@ -73,7 +71,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'للكيس',
     imageUrl: 'assets/images/tomatoes.png',
     type: Type.Vegetables,
-    isFavorite: false,
   ),
   Product(
     id: 'p7',
@@ -86,7 +83,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'للكيلو',
     imageUrl: 'assets/images/grapes.png',
     type: Type.Fruits,
-    isFavorite: true,
   ),
   Product(
     id: 'p8',
@@ -99,7 +95,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'للكيلو',
     imageUrl: 'assets/images/carots.png',
     type: Type.Vegetables,
-    isFavorite: false,
   ),
   Product(
     id: 'p9',
@@ -112,7 +107,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'للكيلو',
     imageUrl: 'assets/images/lemon.png',
     type: Type.Vegetables,
-    isFavorite: false,
   ),
   Product(
     id: 'p10',
@@ -125,7 +119,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'للحبة',
     imageUrl: 'assets/images/watermelon.png',
     type: Type.Fruits,
-    isFavorite: true,
   ),
   Product(
     id: 'p11',
@@ -137,7 +130,6 @@ final List<Product> dummyData = [
     priceDescriptionAr: 'للحبة',
     imageUrl: 'assets/images/mint.png',
     type: Type.Herbs,
-    isFavorite: true,
   ),
 ];
 

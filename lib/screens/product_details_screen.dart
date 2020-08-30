@@ -1,9 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'dart:core';
 
 import '../localization/demo_localization.dart';
 import '../models/is_arabic.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+class ProductDetailsScreen extends StatefulWidget {
+  @override
+  _ProductDetailsScreenState createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  int _quantity = 4;
+
+  void _add() {
+    setState(() {
+      _quantity++;
+    });
+  }
+
+  void _remove() {
+    if (_quantity <= 0) {
+      setState(() {
+        _quantity = 0;
+      });
+    }
+    if (_quantity > 0)
+      setState(() {
+        _quantity--;
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     final routeArgs =
@@ -30,29 +57,53 @@ class ProductDetailsScreen extends StatelessWidget {
                 top: 48.0,
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
                     },
                     child: Container(
-                        width: 45,
-                        height: (MediaQuery.of(context).size.height -
-                                MediaQuery.of(context).padding.top) *
-                            0.07,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).canvasColor,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(15),
-                          ),
+                      width: 45,
+                      height: (MediaQuery.of(context).size.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.07,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).canvasColor,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(15),
                         ),
-                        child: Icon(
-                          isArabic(context)
-                              ? Icons.keyboard_arrow_right
-                              : Icons.keyboard_arrow_left,
-                          color: Colors.black,
-                          size: 28,
-                        )),
+                      ),
+                      child: Icon(
+                        isArabic(context)
+                            ? Icons.keyboard_arrow_right
+                            : Icons.keyboard_arrow_left,
+                        color: Colors.black,
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/cartScreen');
+                    },
+                    child: Container(
+                      width: 45,
+                      height: (MediaQuery.of(context).size.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.07,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).canvasColor,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(15),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.shopping_cart,
+                        color: Colors.black,
+                        size: 28,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -159,31 +210,33 @@ class ProductDetailsScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                  width: 48,
-                                  height: (MediaQuery.of(context).size.height -
-                                          MediaQuery.of(context).padding.top) *
-                                      0.074,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: isArabic(context)
-                                          ? Radius.circular(0)
-                                          : Radius.circular(15),
-                                      bottomLeft: isArabic(context)
-                                          ? Radius.circular(0)
-                                          : Radius.circular(15),
-                                      topRight: isArabic(context)
-                                          ? Radius.circular(15)
-                                          : Radius.circular(0),
-                                      bottomRight: isArabic(context)
-                                          ? Radius.circular(15)
-                                          : Radius.circular(0),
-                                    ),
+                                width: 48,
+                                height: (MediaQuery.of(context).size.height -
+                                        MediaQuery.of(context).padding.top) *
+                                    0.074,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: isArabic(context)
+                                        ? Radius.circular(0)
+                                        : Radius.circular(15),
+                                    bottomLeft: isArabic(context)
+                                        ? Radius.circular(0)
+                                        : Radius.circular(15),
+                                    topRight: isArabic(context)
+                                        ? Radius.circular(15)
+                                        : Radius.circular(0),
+                                    bottomRight: isArabic(context)
+                                        ? Radius.circular(15)
+                                        : Radius.circular(0),
                                   ),
-                                  child: Icon(
-                                    Icons.remove,
-                                    color: Colors.black,
-                                  )),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(Icons.remove),
+                                  color: Colors.black,
+                                  onPressed: _remove,
+                                ),
+                              ),
                               Container(
                                 color: Colors.grey[300],
                                 width: 48,
@@ -192,7 +245,7 @@ class ProductDetailsScreen extends StatelessWidget {
                                     0.074,
                                 child: Center(
                                   child: Text(
-                                    "2",
+                                    '$_quantity', ////////////////////////////////////////////////
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 20,
@@ -202,31 +255,33 @@ class ProductDetailsScreen extends StatelessWidget {
                                 ),
                               ),
                               Container(
-                                  width: 48,
-                                  height: (MediaQuery.of(context).size.height -
-                                          MediaQuery.of(context).padding.top) *
-                                      0.074,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: isArabic(context)
-                                          ? Radius.circular(15)
-                                          : Radius.circular(0),
-                                      bottomLeft: isArabic(context)
-                                          ? Radius.circular(15)
-                                          : Radius.circular(0),
-                                      topRight: isArabic(context)
-                                          ? Radius.circular(0)
-                                          : Radius.circular(15),
-                                      bottomRight: isArabic(context)
-                                          ? Radius.circular(0)
-                                          : Radius.circular(15),
-                                    ),
+                                width: 48,
+                                height: (MediaQuery.of(context).size.height -
+                                        MediaQuery.of(context).padding.top) *
+                                    0.074,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: isArabic(context)
+                                        ? Radius.circular(15)
+                                        : Radius.circular(0),
+                                    bottomLeft: isArabic(context)
+                                        ? Radius.circular(15)
+                                        : Radius.circular(0),
+                                    topRight: isArabic(context)
+                                        ? Radius.circular(0)
+                                        : Radius.circular(15),
+                                    bottomRight: isArabic(context)
+                                        ? Radius.circular(0)
+                                        : Radius.circular(15),
                                   ),
-                                  child: Icon(
-                                    Icons.add,
-                                    color: Colors.black,
-                                  )),
+                                ),
+                                child: IconButton(
+                                  icon: Icon(Icons.add),
+                                  color: Colors.black,
+                                  onPressed: _add,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -265,6 +320,7 @@ class ProductDetailsScreen extends StatelessWidget {
                               width: 16,
                             ),
                             Expanded(
+                              /////////////    SHOULD BE RAISED BUTTON            ////////////////////////////
                               child: Container(
                                 height: 72,
                                 decoration: BoxDecoration(

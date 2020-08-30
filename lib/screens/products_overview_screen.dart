@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-
 import '../localization/demo_localization.dart';
 import '../models/data_search.dart';
 import '../dummy_data.dart';
