@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../localization/demo_localization.dart';
 import '../models/is_arabic.dart';
-import '../screens/user_tabs_screen.dart';
+//import '../screens/user_tabs_screen.dart';
 
 class Header extends StatelessWidget {
   final String title;
@@ -10,6 +10,9 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final height = mq.size.height - mq.padding.top;
+    final width = mq.size.width;
     return Padding(
       padding: const EdgeInsets.only(
         left: 24.0,
@@ -21,20 +24,18 @@ class Header extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              Navigator.canPop(context)
-                  ? Navigator.pop(context)
-                  : Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => TabsScreen(),
-                      ),
-                    );
+              // Navigator.canPop(context)
+              //     ? Navigator.pop(context)
+              //     : Navigator.pushReplacement(
+              //         context,
+              //         // MaterialPageRoute(
+              //           // builder: (BuildContext context) => TabsScreen(),
+              //         // ),
+              //       );
             },
             child: Container(
-              width: 45,
-              height: (MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.07,
+              width: (width) * 0.07,
+              height: (height) * 0.07,
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
                 borderRadius: BorderRadius.all(
@@ -51,7 +52,7 @@ class Header extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: (MediaQuery.of(context).size.width) * 0.13,
+            width: (width) * 0.13,
           ),
           Text(
             getTranslated(context, title),

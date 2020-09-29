@@ -13,6 +13,7 @@ class ListItem extends StatefulWidget {
 }
 
 class _ListItemState extends State<ListItem> {
+  
   int _itemQuantity = 1;
 
   void _add() {
@@ -35,6 +36,9 @@ class _ListItemState extends State<ListItem> {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final height = mq.size.height - mq.padding.top;
+    final width = mq.size.width;
     return Card(
       margin: const EdgeInsets.all(10.0),
       color: Theme.of(context).canvasColor,
@@ -47,9 +51,8 @@ class _ListItemState extends State<ListItem> {
       child: Row(
         children: <Widget>[
           Container(
-            width: (MediaQuery.of(context).size.width) * 0.23,
-            height: (MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top) *
+            width: (width) * 0.23,
+            height: (height) *
                 0.15,
             decoration: BoxDecoration(
               color: widget.color,
@@ -59,38 +62,36 @@ class _ListItemState extends State<ListItem> {
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Image.asset(
+              child: Image.network(
                 widget.imageUrl,
               ),
             ),
           ),
           SizedBox(
-            width: (MediaQuery.of(context).size.width) * 0.05,
+            width: (width) * 0.05,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                width: (MediaQuery.of(context).size.width) * 0.3,
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top) *
+                width: (width) * 0.3,
+                height: (height) *
                     0.04,
                 //child: FittedBox(
-                  child: Text(
-                    widget.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                child: Text(
+                  widget.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 //),
               ),
               Container(
-                width: (MediaQuery.of(context).size.width) * 0.15,
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top) *
+                width: (width) * 0.15,
+                height: (height) *
                     0.03,
                 child: FittedBox(
                   child: Text(
@@ -108,15 +109,14 @@ class _ListItemState extends State<ListItem> {
             ],
           ),
           SizedBox(
-            width: (MediaQuery.of(context).size.width) * 0.08,
+            width: (width) * 0.08,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                width: (MediaQuery.of(context).size.width) * 0.04,
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top) *
+                width: (width) * 0.04,
+                height: (height) *
                     0.15,
                 child: FittedBox(
                   child: Text(
@@ -131,7 +131,7 @@ class _ListItemState extends State<ListItem> {
             ],
           ),
           SizedBox(
-            width: (MediaQuery.of(context).size.width) * 0.025,
+            width: (width) * 0.025,
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -143,8 +143,8 @@ class _ListItemState extends State<ListItem> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(30))),
                   child: Container(
-                    height: (MediaQuery.of(context).size.height) * 0.04,
-                    width: (MediaQuery.of(context).size.width) * 0.075,
+                    height: (height) * 0.04,
+                    width: (width) * 0.075,
                     decoration: BoxDecoration(
                       color: Theme.of(context).canvasColor,
                       borderRadius: BorderRadius.all(
@@ -159,7 +159,7 @@ class _ListItemState extends State<ListItem> {
                 ),
               ),
               SizedBox(
-                height: (MediaQuery.of(context).size.height) * 0.025,
+                height: (height) * 0.025,
               ),
               InkWell(
                 onTap: _remove,
@@ -168,8 +168,8 @@ class _ListItemState extends State<ListItem> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(30))),
                   child: Container(
-                    height: (MediaQuery.of(context).size.height) * 0.04,
-                    width: (MediaQuery.of(context).size.width) * 0.075,
+                    height: (height) * 0.04,
+                    width: (width) * 0.075,
                     decoration: BoxDecoration(
                       color: Theme.of(context).canvasColor,
                       borderRadius: BorderRadius.all(

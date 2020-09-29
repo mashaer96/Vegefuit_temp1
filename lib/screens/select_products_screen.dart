@@ -1,18 +1,16 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 // import 'package:sliding_up_panel/sliding_up_panel.dart';
 // import 'package:vegefruit/widgets/collapsed_panel.dart';
-// import 'package:vegefruit/widgets/list_item.dart';
-
 import '../localization/demo_localization.dart';
 import '../models/data_search.dart';
-import '../dummy_data.dart';
-import '../main.dart';
 import '../models/product.dart';
-//import '../widgets/render_grid_item.dart';
-import '../widgets/render_select_grid_item.dart';
 import '../models/laguages.dart';
 import '../models/is_arabic.dart';
+import '../main.dart';
+import '../widgets/render_select_grid_item.dart';
 
 class SelectProductsScreen extends StatefulWidget {
   @override
@@ -20,20 +18,43 @@ class SelectProductsScreen extends StatefulWidget {
 }
 
 class _SelectProductsScreenState extends State<SelectProductsScreen> {
-  // final title = 'Watermelone';
-  // final price = 2.45;
-  // final priceDescription = 'Per unit';
-  // final imageUrl = 'assets/images/watermelon.png';
-  // final color = Color(0xFFFF3B4A);
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
-  var _selectionMode = false; // must be in the product table in the firebase
-
-  List<String> _selectedIdList = List();
-  List<Product> _currentProducts = dummyData;
+  List<String> selectedIdList = List();
+  bool _selectionMode = false;
   bool _allHover = false;
   bool _vegetablesHover = false;
   bool _fruitsHover = false;
   bool _herbsHover = false;
+  String _filterOption = 'all';
+  String _type = 'fruits';
+
+  Future<void> _updateSelectedValue(int i) async {
+    try {
+      await (FirebaseFirestore.instance
+          .collection('products')
+          .doc(selectedIdList[i])
+          .update({'is_selected': true}));
+      print(selectedIdList[i]);
+    } catch (ex) {
+      print(ex);
+      _key.currentState.showSnackBar((SnackBar(content: Text(ex.toString()))));
+    }
+  }
+
+  void _selectStock() {
+    try {
+      for (int i = 0; i < selectedIdList.length; i++) {
+        _updateSelectedValue(i);
+      }
+      _key.currentState.removeCurrentSnackBar();
+      _key.currentState.showSnackBar(
+          (SnackBar(content: Text(getTranslated(context, 'AddStockSuccess')))));
+    } catch (ex) {
+      print(ex);
+      _key.currentState.showSnackBar((SnackBar(content: Text(ex.toString()))));
+    }
+  }
 
   void _changeLanguage(Languages language) async {
     Locale _temp = await setLocale(language.languageCode);
@@ -42,17 +63,30 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
 
   void _changeSelection(String index) {
     _selectionMode = true;
-    _selectedIdList.add(index);
+    selectedIdList.add(index);
+  }
+
+  void _toggleSelection() {
+    setState(() {
+      _selectionMode = !_selectionMode;
+      selectedIdList.clear();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     List<Widget> _buttons = List();
+    final mq = MediaQuery.of(context);
+
+    final allProducstList = Provider.of<List<Product>>(context);
+
     if (_selectionMode) {
       _buttons.add(IconButton(
           icon: Icon(Icons.check),
           onPressed: () {
             // reflect the database with isSelected field for each selected product + add the isSelected products to the SlidingUpPanel
+            _selectStock();
+            _toggleSelection();
           }));
     }
     final appBar = AppBar(
@@ -72,16 +106,13 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
             ? new IconButton(
                 icon: new Icon(Icons.arrow_back),
                 onPressed: () {
-                  //close(context, null);
-                  setState(() {
-                    _selectionMode = !_selectionMode;
-                    _selectedIdList.clear();
-                  });
+                  _toggleSelection();
                 })
             : new IconButton(
                 icon: new Icon(Icons.search),
                 onPressed: () {
-                  showSearch(context: context, delegate: DataSearch());
+                  showSearch(
+                      context: context, delegate: DataSearch(allProducstList));
                 }),
         actions: _selectionMode
             ? _buttons
@@ -111,6 +142,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
                             .toList()))
               ]);
     return Scaffold(
+      key: _key,
       appBar: appBar,
       backgroundColor: Color.fromRGBO(255, 245, 229, 1),
       resizeToAvoidBottomInset: false,
@@ -130,7 +162,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
       //     ),
       //   ),
       //   minHeight: 60,
-      //   maxHeight: MediaQuery.of(context).size.height * 0.70,
+      //   maxHeight: mq-.size.height * 0.70,
       //   backdropEnabled: true,
       //   borderRadius: BorderRadius.vertical(
       //     top: Radius.circular(20),
@@ -141,51 +173,81 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               SizedBox(
-                height: (MediaQuery.of(context).size.height -
+                height: (mq.size.height -
                         appBar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
+                        mq.padding.top) *
                     0.011,
               ),
               Container(
-                height: (MediaQuery.of(context).size.height -
+                height: (mq.size.height -
                         appBar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
+                        mq.padding.top) *
                     0.19,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    typeIcon(
-                      'all',
-                      _allHover,
-                      Color(0xFFFAA75A),
-                      'assets/images/all.png',
-                      getTranslated(context, 'all'),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _filterOption = 'all';
+                        });
+                        _colorOnHover(_filterOption);
+                      },
+                      child: typeIcon(
+                        _allHover,
+                        Color(0xFFFAA75A),
+                        'assets/images/all.png',
+                        getTranslated(context, 'all'),
+                      ),
                     ),
-                    typeIcon(
-                      'vegetables',
-                      _vegetablesHover,
-                      Color(0xFFFC747F),
-                      'assets/images/vegetables.png',
-                      getTranslated(context, 'vegetables'),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _filterOption = 'vegetables';
+                          _type = 'vegetables';
+                        });
+                        _colorOnHover(_filterOption);
+                      },
+                      child: typeIcon(
+                        _vegetablesHover,
+                        Color(0xFFFC747F),
+                        'assets/images/vegetables.png',
+                        getTranslated(context, 'vegetables'),
+                      ),
                     ),
-                    typeIcon(
-                      'fruits',
-                      _fruitsHover,
-                      Color(0xFFA59FF5),
-                      'assets/images/fruits.png',
-                      getTranslated(context, 'fruits'),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _filterOption = 'fruits';
+                          _type = 'fruits';
+                        });
+                        _colorOnHover(_filterOption);
+                      },
+                      child: typeIcon(
+                        _fruitsHover,
+                        Color(0xFFA59FF5),
+                        'assets/images/fruits.png',
+                        getTranslated(context, 'fruits'),
+                      ),
                     ),
-                    typeIcon(
-                      'herbs',
-                      _herbsHover,
-                      Color(0xFF8ADB79),
-                      'assets/images/herbs.png',
-                      getTranslated(context, 'herbs'),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _filterOption = 'herbs';
+                          _type = 'herbs';
+                        });
+                        _colorOnHover(_filterOption);
+                      },
+                      child: typeIcon(
+                        _herbsHover,
+                        Color(0xFF8ADB79),
+                        'assets/images/herbs.png',
+                        getTranslated(context, 'herbs'),
+                      ),
                     ),
                   ],
                 ),
@@ -196,113 +258,147 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
                 endIndent: 10,
               ),
               Container(
-                height: (MediaQuery.of(context).size.height -
+                height: (mq.size.height -
                         appBar.preferredSize.height -
-                        MediaQuery.of(context).padding.top) *
+                        mq.padding.top) *
                     0.689,
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(10.0),
-                  itemCount: _currentProducts.length,
-                  itemBuilder: (ctx, i) => renderSelectGridItem(
-                      _currentProducts[i].id,
-                      isArabic(context)
-                          ? _currentProducts[i].titleAr
-                          : _currentProducts[i].titleEn,
-                      _currentProducts[i].price,
-                      isArabic(context)
-                          ? _currentProducts[i].priceDescriptionAr
-                          : _currentProducts[i].priceDescriptionEn,
-                      _currentProducts[i].color,
-                      _currentProducts[i].imageUrl),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1 / 1.5,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                  ),
-                ),
+                child: (allProducstList != null)
+                    ? GridView.builder(
+                        padding: const EdgeInsets.all(10.0),
+                        itemCount: _filterOption != 'all'
+                            ? allProducstList
+                                .where((p) => (p.type == _type))
+                                .toList()
+                                .length
+                            : allProducstList.length,
+                        itemBuilder: (ctx, i) {
+                          print(allProducstList[i]);
+                          return renderSelectGridItem(
+                            _filterOption != 'all'
+                                ? allProducstList
+                                    .where((p) => (p.type == _type))
+                                    .toList()[i]
+                                    .id
+                                : allProducstList[i].id,
+                            isArabic(context)
+                                ? _filterOption != 'all'
+                                    ? allProducstList
+                                        .where((p) => (p.type == _type))
+                                        .toList()[i]
+                                        .titleAr
+                                    : allProducstList[i].titleAr
+                                : _filterOption != 'all'
+                                    ? allProducstList
+                                        .where((p) => (p.type == _type))
+                                        .toList()[i]
+                                        .titleEn
+                                    : allProducstList[i].titleEn,
+                            _filterOption != 'all'
+                                ? allProducstList
+                                    .where((p) => (p.type == _type))
+                                    .toList()[i]
+                                    .price
+                                : allProducstList[i].price,
+                            getTranslated(
+                                context,
+                                _filterOption != 'all'
+                                    ? allProducstList
+                                        .where((p) => (p.type == _type))
+                                        .toList()[i]
+                                        .priceDescription
+                                    : allProducstList[i].priceDescription),
+                            _filterOption != 'all'
+                                ? allProducstList
+                                    .where((p) => (p.type == _type))
+                                    .toList()[i]
+                                    .color
+                                : allProducstList[i].color,
+                            _filterOption != 'all'
+                                ? allProducstList
+                                    .where((p) => (p.type == _type))
+                                    .toList()[i]
+                                    .image
+                                : allProducstList[i].image,
+                          );
+                        },
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 1 / 1.5,
+                          crossAxisSpacing: 20,
+                          mainAxisSpacing: 20,
+                        ),
+                      )
+                    : Center(
+                        child: Text('Loading...'),
+                      ),
               ),
             ],
           ),
         ),
       ),
-      //),
-      // floatingActionButton: Container(
-      //   child: FloatingActionButton(
-      //     backgroundColor: Colors.black.withOpacity(0.3),
-      //     onPressed: () {
-      //       Navigator.pushNamed(context, '/addProductScreen');
-      //     },
-      //     elevation: 0,
-      //     tooltip: isArabic(context) ? 'منتج جديد!' : 'New Product!',
-      //     child: Icon(
-      //       Icons.add,
-      //       color: Theme.of(context).canvasColor,
-      //     ),
-      //   ),
-      // ),
+      floatingActionButton: Container(
+        child: FloatingActionButton(
+          backgroundColor: Colors.black.withOpacity(0.3),
+          onPressed: () {
+            Navigator.pushNamed(context, '/addProductScreen');
+          },
+          elevation: 0,
+          tooltip: isArabic(context) ? 'منتج جديد!' : 'New Product!',
+          child: Icon(
+            Icons.add,
+            color: Theme.of(context).canvasColor,
+          ),
+        ),
+      ),
     );
   }
 
-  void _typeFilter(String type) {
+  void _colorOnHover(String type) {
     setState(() {
-      _currentProducts = dummyData.where((product) {
-        if (type == 'all') {
-          _allHover = true;
-          _vegetablesHover = false;
-          _fruitsHover = false;
-          _herbsHover = false;
-          return true;
-        }
-        if ((type == 'vegetables') && (product.type != Type.Vegetables)) {
-          _allHover = false;
-          _vegetablesHover = true;
-          _fruitsHover = false;
-          _herbsHover = false;
-          return false;
-        }
-        if ((type == 'fruits') && (product.type != Type.Fruits)) {
-          _allHover = false;
-          _vegetablesHover = false;
-          _fruitsHover = true;
-          _herbsHover = false;
-          return false;
-        }
-        if ((type == 'herbs') && (product.type != Type.Herbs)) {
-          _allHover = false;
-          _vegetablesHover = false;
-          _fruitsHover = false;
-          _herbsHover = true;
-          return false;
-        }
-        return true;
-      }).toList();
+      if (type == 'all') {
+        _allHover = true;
+        _vegetablesHover = false;
+        _fruitsHover = false;
+        _herbsHover = false;
+      }
+      if (type == 'vegetables') {
+        _allHover = false;
+        _vegetablesHover = true;
+        _fruitsHover = false;
+        _herbsHover = false;
+      }
+      if (type == 'fruits') {
+        _allHover = false;
+        _vegetablesHover = false;
+        _fruitsHover = true;
+        _herbsHover = false;
+      }
+      if (type == 'herbs') {
+        _allHover = false;
+        _vegetablesHover = false;
+        _fruitsHover = false;
+        _herbsHover = true;
+      }
     });
   }
 
-  Flexible typeIcon(
-      String type, bool arg, Color color, String image, String text) {
-    return Flexible(
-      fit: FlexFit.loose,
+  Widget typeIcon(bool arg, Color color, String image, String text) {
+    return Container(
+      width: (MediaQuery.of(context).size.width) * 0.21,
       child: Column(
         children: <Widget>[
-          GestureDetector(
-            onTap: () {
-              _typeFilter(type);
-            },
-            child: Container(
-              margin: const EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                color: arg == true ? Colors.black.withOpacity(0.4) : color,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(25),
-                ),
+          Container(
+            margin: const EdgeInsets.all(5.0),
+            decoration: BoxDecoration(
+              color: arg == true ? Colors.black.withOpacity(0.4) : color,
+              borderRadius: BorderRadius.all(
+                Radius.circular(25),
               ),
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Image.asset(
-                  image,
-                ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Image.asset(
+                image,
               ),
             ),
           ),
@@ -318,7 +414,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
       return GridTile(
         header: GridTileBar(
           leading: Icon(
-            _selectedIdList.contains(id)
+            selectedIdList.contains(id)
                 ? Icons.check_circle
                 : Icons.radio_button_unchecked,
             color: Colors.black,
@@ -342,9 +438,9 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
           ),
           onTap: () {
             setState(() {
-              _selectedIdList.contains(id)
-                  ? _selectedIdList.remove(id)
-                  : _selectedIdList.add(id);
+              selectedIdList.contains(id)
+                  ? selectedIdList.remove(id)
+                  : selectedIdList.add(id);
             });
           },
         ),

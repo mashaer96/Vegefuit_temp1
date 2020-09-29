@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/render_grid_item.dart';
+import '../localization/demo_localization.dart';
+import '../widgets/render_select_grid_item.dart';
+//import '../widgets/render_grid_item.dart';
 import '../models/product.dart';
-import '../dummy_data.dart';
 import '../models/is_arabic.dart';
 
 class DataSearch extends SearchDelegate<String> {
-  List<Product> _productsList = dummyData;
-  List<Product> _historyList = dummyHistoryData;
+  List<Product> _productsList;
+  List<Product> _historyList = [];
+  //TextInputType keyboardType = TextInputType.name;
+
+  DataSearch(this._productsList) : super(keyboardType: TextInputType.name);
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -49,28 +53,26 @@ class DataSearch extends SearchDelegate<String> {
             ? p.titleAr.startsWith(query)
             : p.titleEn.startsWith(query)))
         .toList();
-    return Expanded(
-      child: GridView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: _suggestionList.length,
-        itemBuilder: (ctx, i) => RenderGridItem(
-          id: _suggestionList[i].id,
-          title: isArabic(context)
-              ? _suggestionList[i].titleAr
-              : _suggestionList[i].titleEn,
-          price: _suggestionList[i].price,
-          priceDescription: isArabic(context)
-              ? _suggestionList[i].priceDescriptionAr
-              : _suggestionList[i].priceDescriptionEn,
-          color: _suggestionList[i].color,
-          imageUrl: _suggestionList[i].imageUrl,
-        ),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 1 / 1.5,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-        ),
+    return GridView.builder(
+      padding: const EdgeInsets.all(10.0),
+      itemCount: _suggestionList.length,
+      itemBuilder: (ctx, i) => RenderSelectGridItem(
+        //check the authentication.. if admin, RenderSelectGridItem else RenderGridItem
+        id: _suggestionList[i].id,
+        title: isArabic(context)
+            ? _suggestionList[i].titleAr
+            : _suggestionList[i].titleEn,
+        price: _suggestionList[i].price,
+        priceDescription:
+            getTranslated(context, _suggestionList[i].priceDescription),
+        color: _suggestionList[i].color,
+        imageUrl: _suggestionList[i].image,
+      ),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1 / 1.5,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
       ),
     );
   }
@@ -83,7 +85,7 @@ class DataSearch extends SearchDelegate<String> {
         : _productsList
             .where((p) => (isArabic(context)
                 ? p.titleAr.startsWith(query)
-                : p.titleEn.startsWith(query.toUpperCase())))
+                : p.titleEn.startsWith(query)))
             .toList();
     return ListView.builder(
       itemBuilder: (context, i) => ListTile(
@@ -95,7 +97,7 @@ class DataSearch extends SearchDelegate<String> {
           text: TextSpan(
             text: isArabic(context)
                 ? _suggestionList[i].titleAr.substring(0, query.length)
-                : _suggestionList[i].titleEn.substring(0, query.length).toUpperCase(),
+                : _suggestionList[i].titleEn.substring(0, query.length),
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,

@@ -1,4 +1,4 @@
-package com.example.vegefruit
+package com.meems.vegefruit
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -23,8 +23,27 @@
   "newProduct": "منتج جديد",
   "currentStock": "المخزون المتوفر",
 
-  "title": "اسم المنتج",
-  "priceDescription": "وحدة القياس",
+  "titleEn": "الاسم بالإنجليزية",
+  "titleAr": "الإسم بالعربية",
+  "priceDescription": "الوحدة",
   "price": "السعر",
+  "kilos": "كيلو",
+  "type": "النوع",
+  "proDate": "تاريخ الإنتاج",
+  "expDate": "تاريخ الإنتهاء",
+  "pro": "إنتاج",
+  "exp": "إنتهاء",
+
+  "perKilo": "للكيلو",
+  "perUnit": "للحبة",
+  "perBag": "للكيس",
+  "perBox": "للصندوق",
+
+  "successfullAdd": "تم إضافة المنتج بنجاح",
+  "successfullLogin": "تسجيل الدخول بنجاح",
+  "uploadingImage": "يتم إضافة المنتج، يرجى الإنتظار ...",
+  "AddStockSuccess": "تم إضافة المنتجات إلى المخزون بنجاح",
+  "required": "مطلوب",
+
   "save": "حفظ"
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vegefruit/localization/demo_localization.dart';
 
+import '../models/product.dart';
+import '../services/database.dart';
+//import '../screens/add_product.screen.dart';
 import '../screens/orders_screen.dart';
 import '../screens/select_products_screen.dart';
 import '../screens/stock_screen.dart';
@@ -12,10 +16,13 @@ class AdminTabsScreen extends StatefulWidget {
 
 class _AdminTabsScreenState extends State<AdminTabsScreen> {
   final List<Widget> _screens = [
-    SelectProductsScreen(),
-    StockScreen(),
+    StreamProvider<List<Product>>.value(
+        value: Database().products, child: SelectProductsScreen()),
+
+    StreamProvider<List<Product>>.value(
+        value: Database().products, child: StockScreen()),
     OrdersScreen(),
-    // AddProductScreen(),
+    //AddProductScreen(),
   ];
 
   int _selectedScreenIndex = 0;

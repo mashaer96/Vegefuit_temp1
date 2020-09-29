@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "909886056781",
+    "firebase_url": "https://vegefruit-305c2.firebaseio.com",
+    "project_id": "vegefruit-305c2",
+    "storage_bucket": "vegefruit-305c2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909886056781:android:53940cac3e1b0760c0af04",
+        "android_client_info": {
+          "package_name": "com.meems.vegefruit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "909886056781-9sem40boah29kenj5c1aaklfg01jnqb8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATLIYeModXSZ97nxD77hBmAKgrpzzSnRU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "909886056781-9sem40boah29kenj5c1aaklfg01jnqb8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

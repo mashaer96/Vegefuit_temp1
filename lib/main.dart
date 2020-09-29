@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:vegefruit/screens/admin_tabs_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import './services/database.dart';
 
+import './screens/admin_tabs_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/edit_products_screen.dart';
 import './screens/add_product.screen.dart';
@@ -10,13 +13,15 @@ import './screens/add_product.screen.dart';
 import './screens/select_products_screen.dart';
 import './screens/login_screen.dart';
 import './screens/product_details_screen.dart';
-import 'screens/user_tabs_screen.dart';
+//import 'screens/user_tabs_screen.dart';
 import './localization/demo_localization.dart';
+import './models/product.dart';
 // import './routes/custom_route.dart';
 // import './routes/route_names.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(new MyApp());
@@ -90,10 +95,11 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/adminTabsScreen': (ctx) => AdminTabsScreen(),
         '/productDetails': (ctx) => ProductDetailsScreen(),
-        '/tabScreen': (ctx) => TabsScreen(),
+        // '/tabScreen': (ctx) => TabsScreen(),
         '/cartScreen': (ctx) => CartScreen(),
         '/selectProductsScreen': (ctx) => SelectProductsScreen(),
-        '/editProductsScreen': (ctx) => EditProductsScreen(),
+        '/editProductsScreen': (ctx) => StreamProvider<List<Product>>.value(
+            value: Database().products, child: EditProductsScreen()),
         '/addProductScreen': (ctx) => AddProductScreen(),
       },
     );

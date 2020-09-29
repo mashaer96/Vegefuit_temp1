@@ -23,8 +23,27 @@
   "newProduct": "New Product",
   "currentStock": "Current Stock",
 
-  "title": "Product Title",
+  "titleEn": "English Name",
+  "titleAr": "Arabic Name",
   "priceDescription": "Unit",
   "price": "Price",
+  "kilos": "Kilos",
+  "type": "Type",
+  "proDate": "Pro. Date",
+  "expDate": "Exp. Date",
+  "pro": "Pro. ",
+  "exp": "Exp. ",
+
+  "perKilo": "Per Kilo",
+  "perUnit": "Per Unit",
+  "perBag": "Per Bag",
+  "perBox": "Per Box",
+
+  "successfullAdd": "Product added successfully",
+  "successfullLogin": "Login Successful",
+  "uploadingImage": "Uploading product, please wait ...",
+  "AddStockSuccess": "Products added into the stock successfully",
+  "required": "Required",
+
   "save": "Save"
 }

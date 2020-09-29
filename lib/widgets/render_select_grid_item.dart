@@ -23,11 +23,11 @@ class RenderSelectGridItem extends StatelessWidget {
       '/editProductsScreen',
       arguments: {
         'id': id,
-        'title': title,
-        'price': price,
-        'priceDescription': priceDescription,
-        'imageUrl': imageUrl,
-        'color': color,
+        // 'title': title,
+        // 'price': price,
+        // 'priceDescription': priceDescription,
+        // 'imageUrl': imageUrl,
+        // 'color': color,
       },
     );
   }
@@ -65,8 +65,8 @@ class RenderSelectGridItem extends StatelessWidget {
               ),
               Expanded(
                 child: Hero(
-                  tag: title,
-                  child: Image.asset(
+                  tag: id,
+                  child: Image.network(
                     imageUrl,
                   ),
                 ),

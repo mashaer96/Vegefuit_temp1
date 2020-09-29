@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:vegefruit/widgets/hedear.dart';
+class OrdersScreen extends StatefulWidget {
+  @override
+  _OrdersScreenState createState() => _OrdersScreenState();
+}
 
-class OrdersScreen extends StatelessWidget {
+class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).canvasColor,
-      body: Container(
-        width: (MediaQuery.of(context).size.width) * 1.0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Header('orders'),
-          ],
-        ),
-      ),
+    return Container(
+      
     );
   }
 }
