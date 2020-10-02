@@ -33,6 +33,7 @@
   "expDate": "Exp. Date",
   "pro": "Pro. ",
   "exp": "Exp. ",
+  "quantity": "Quantity:",
 
   "perKilo": "Per Kilo",
   "perUnit": "Per Unit",
@@ -43,6 +44,7 @@
   "successfullLogin": "Login Successful",
   "uploadingImage": "Uploading product, please wait ...",
   "AddStockSuccess": "Products added into the stock successfully",
+  "AddStockFail": "Error: Make sure quantities are not 0",
   "required": "Required",
 
   "save": "Save"

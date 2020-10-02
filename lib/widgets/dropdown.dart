@@ -4,11 +4,17 @@ import 'package:vegefruit/localization/demo_localization.dart';
 // ignore: must_be_immutable
 class DropdownWidget extends StatefulWidget {
   final String hint;
-  String value;
+  String newValue;
+  String initValue;
   final Function getValue;
   final List<String> valuesList;
 
-  DropdownWidget({this.hint, this.value, this.getValue, this.valuesList});
+  DropdownWidget(
+      {this.hint,
+      this.newValue,
+      this.getValue,
+      this.valuesList,
+      this.initValue});
 
   @override
   _DropdownWidgetState createState() => _DropdownWidgetState();
@@ -25,13 +31,14 @@ class _DropdownWidgetState extends State<DropdownWidget> {
       width: (width) * 0.3,
       child: DropdownButtonFormField<String>(
         hint: Text(widget.hint),
+        value: widget.initValue,
         onChanged: (input) {
           setState(() {
-            widget.value = widget.getValue(input);
+            widget.newValue = widget.getValue(input);
           });
         },
         validator: (String input) {
-          if (widget.value == '') {
+          if (widget.newValue == '') {
             return getTranslated(context, 'required');
           }
           return null;

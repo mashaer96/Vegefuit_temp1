@@ -25,19 +25,25 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
               title: Text('Select a color'),
               content: SingleChildScrollView(
                 child: Container(
-                  height: (height) *
-                      0.2,
+                  height: (height) * 0.2,
                   child: BlockPicker(
                     pickerColor: widget.currentColor,
                     onColorChanged: widget.changeColor,
                     availableColors: [
-                      Color(0xffffeb3b),
-                      Color(0xFF8B84F3),
-                      Color(0xFF79DE64),
-                      Color(0xFFFF8D22),
-                      Color(0xFFEC75EA),
-                      Color(0xFFFF3B4A),
-                      Color(0xFF42B1FF),
+                      // Color(0xffffeb3b),
+                      // Color(0xFF8B84F3),
+                      // Color(0xFF79DE64),
+                      // Color(0xFFFF8D22),
+                      // Color(0xFFEC75EA),
+                      // Color(0xFFFF3B4A),
+                      // Color(0xFF42B1FF),
+                      Color(0xffffef62),
+                      Color(0xFF9791f4),
+                      Color(0xFF83e06f),
+                      Color(0xFFf9913e),
+                      Color(0xFFef8bed),
+                      Color(0xFFff5562),
+                      Color(0xFF5cbcff),
                     ],
                   ),
                 ),
@@ -47,7 +53,7 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
         );
       },
       child: Container(
-        width: (width) * 0.07,
+        width: (width) * 0.12,
         height: (height) * 0.07,
         decoration: BoxDecoration(
           color: Theme.of(context).canvasColor,

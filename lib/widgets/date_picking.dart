@@ -5,11 +5,10 @@ import 'package:intl/intl.dart';
 class DatePickingWidget extends StatefulWidget {
   String textHint;
   DateTime pickedDate;
-  Color color;
+
   Function pickerFunction;
 
-  DatePickingWidget(
-      {this.textHint, this.pickedDate, this.color, this.pickerFunction});
+  DatePickingWidget({this.textHint, this.pickedDate, this.pickerFunction});
   @override
   _DatePickingWidgetState createState() => _DatePickingWidgetState();
 }
@@ -31,18 +30,13 @@ class _DatePickingWidgetState extends State<DatePickingWidget> {
                     DateFormat.yMd().format(widget.pickedDate),
             style: TextStyle(
               color: Colors.black87,
-              fontSize: 16.3,
+              fontSize: 16,
             ),
           ),
-        ),
-        SizedBox(
-          width: (width) * 0.0,
         ),
         IconButton(
           icon: Icon(Icons.date_range),
           iconSize: 28,
-          color: widget.color,
-          splashColor: widget.color,
           onPressed: widget.pickerFunction,
         ),
       ],

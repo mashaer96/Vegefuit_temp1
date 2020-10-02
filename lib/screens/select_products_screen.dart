@@ -35,7 +35,6 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
           .collection('products')
           .doc(selectedIdList[i])
           .update({'is_selected': true}));
-      print(selectedIdList[i]);
     } catch (ex) {
       print(ex);
       _key.currentState.showSnackBar((SnackBar(content: Text(ex.toString()))));
@@ -265,6 +264,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
                 child: (allProducstList != null)
                     ? GridView.builder(
                         padding: const EdgeInsets.all(10.0),
+                        //reverse: true,
                         itemCount: _filterOption != 'all'
                             ? allProducstList
                                 .where((p) => (p.type == _type))
@@ -272,7 +272,6 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
                                 .length
                             : allProducstList.length,
                         itemBuilder: (ctx, i) {
-                          print(allProducstList[i]);
                           return renderSelectGridItem(
                             _filterOption != 'all'
                                 ? allProducstList
@@ -319,6 +318,12 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
                                     .toList()[i]
                                     .image
                                 : allProducstList[i].image,
+                            _filterOption != 'all'
+                                ? allProducstList
+                                    .where((p) => (p.type == _type))
+                                    .toList()[i]
+                                    .quantity
+                                : allProducstList[i].quantity,
                           );
                         },
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -409,7 +414,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
   }
 
   GridTile renderSelectGridItem(String id, String title, double price,
-      String priceDescription, Color color, String imageUrl) {
+      String priceDescription, Color color, String imageUrl, double quantity) {
     if (_selectionMode) {
       return GridTile(
         header: GridTileBar(

@@ -2,22 +2,24 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
-import '../widgets/color_picker.dart';
 import '../widgets/date_picking.dart';
-import '../widgets/double_field.dart';
 import '../widgets/dropdown.dart';
-import '../widgets/title_field.dart';
 import '../models/product.dart';
 import '../localization/demo_localization.dart';
 import '../models/is_arabic.dart';
 
 class EditProductsScreen extends StatefulWidget {
+  static _EditProductsScreenState of(BuildContext context) =>
+      context.findAncestorStateOfType();
   @override
   _EditProductsScreenState createState() => _EditProductsScreenState();
 }
@@ -27,35 +29,119 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
   GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  String _titleAr;
+  String _titleEn;
+  String _dropdownValueType;
+  String _dropdownValueUnit;
+  String _price;
+  String _weight;
+  String _quantity;
+
+  Color _currentColor;
+
+  String _proDateField = '';
+  String _expDateField = '';
   DateTime _proDate;
   DateTime _expDate;
+
+  String _image = '';
   File _imageFile;
 
-  ///////////////////////////////////////
-  String _title; ////////////////////////
-  String _priceDescription; ////////////
-  String _price; //////////////////////
-  ///////////////////////////////////
+  String _getType(String _input) {
+    if (_input == getTranslated(context, 'vegetables')) {
+      setState(() {
+        _dropdownValueType = 'vegetables';
+      });
+    }
+    if (_input == getTranslated(context, 'fruits')) {
+      setState(() {
+        _dropdownValueType = 'fruits';
+      });
+    }
+    if (_input == getTranslated(context, 'herbs')) {
+      setState(() {
+        _dropdownValueType = 'herbs';
+      });
+    }
+    return _dropdownValueType;
+  }
 
-  // void _submit() {
-  //   if (formKey.currentState.validate()) {
-  //     formKey.currentState.save();
-  //     print(_title);
-  //     print(_priceDescription);
-  //     print(_price);
-  //   }
-  // }
+  String _getUnit(String _input) {
+    if (_input == getTranslated(context, 'perKilo')) {
+      setState(() {
+        _dropdownValueUnit = 'perKilo';
+      });
+    }
+    if (_input == getTranslated(context, 'perUnit')) {
+      setState(() {
+        _dropdownValueUnit = 'perUnit';
+      });
+    }
+    if (_input == getTranslated(context, 'perBag')) {
+      setState(() {
+        _dropdownValueUnit = 'perBag';
+      });
+    }
+    if (_input == getTranslated(context, 'perBox')) {
+      setState(() {
+        _dropdownValueUnit = 'perBox';
+      });
+    }
+    return _dropdownValueUnit;
+  }
+
+  void _proDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2010),
+      lastDate: DateTime.now(),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(
+        () {
+          _proDate = pickedDate;
+        },
+      );
+    });
+  }
+
+  void _expDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2090),
+    ).then((pickedDate) {
+      if (pickedDate == null) {
+        return;
+      }
+      setState(
+        () {
+          _expDate = pickedDate;
+        },
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     final height = mq.size.height - mq.padding.top;
     final width = mq.size.width;
+
+    final routeArgs =
+        ModalRoute.of(context).settings.arguments as Map<String, Object>;
+    final String _id = routeArgs['id'];
+    final allProducstList = Provider.of<List<Product>>(context);
+
     final _titleEnHint = getTranslated(context, 'titleEn');
     final _titleArHint = getTranslated(context, 'titleAr');
     final _priceHint = getTranslated(context, 'price');
     final _priceDescriptionHint = getTranslated(context, 'priceDescription');
-    final _kilosHint = getTranslated(context, 'kilos');
+    final _weightHint = getTranslated(context, 'kilos');
     final _typeHint = getTranslated(context, 'type');
     final _proDateHint = getTranslated(context, 'pro');
     final _expDateHint = getTranslated(context, 'exp');
@@ -71,215 +157,109 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
       getTranslated(context, 'herbs'),
     ];
 
-    final routeArgs =
-        ModalRoute.of(context).settings.arguments as Map<String, Object>;
-    final String _id = routeArgs['id'];
-    final allProducstList = Provider.of<List<Product>>(context);
-    List<Product> product =
-        allProducstList.where((p) => (p.id == _id)).toList();
-    TextEditingController _newTitleArController =
-        TextEditingController(text: product[0].titleAr);
-    TextEditingController _newTitleEnController =
-        TextEditingController(text: product[0].titleEn);
-    String _dropdownValueType = getTranslated(context, product[0].type);
-    TextEditingController _newPriceController =
-        TextEditingController(text: product[0].price.toString());
-    String _dropdownValueUnit =
-        getTranslated(context, product[0].priceDescription);
-    TextEditingController _newWeightController =
-        TextEditingController(text: product[0].weight.toString());
-    int _quantity = int.parse(product[0]
-        .quantity
-        .toString()
-        .substring(0, product[0].quantity.toString().indexOf('.')));
-    TextEditingController _newQuantityController =
-        TextEditingController(text: _quantity.toString());
-
-    Color _currentColor = product[0].color;
-    //DateTime _selectedDate;
-    String _proDateField = product[0].proDate;
-    String _expDateField = product[0].expDate;
-    String _image = product[0].image;
+    Future<String> _uploadImageAndGetURL(String fileName, File file) async {
+      FirebaseStorage _storage = FirebaseStorage.instance;
+      StorageUploadTask _task = _storage
+          .ref()
+          .child(fileName)
+          .putFile(file, StorageMetadata(contentType: 'image/png'));
+      final String _downloadURL =
+          await (await _task.onComplete).ref.getDownloadURL();
+      return _downloadURL;
+    }
 
     _updateProduct() async {
-      //   if (formKey.currentState.validate()) {
-      //     DocumentReference ref;
-      //     if (_proDate == null) {
-      //       setState(() {
-      //         _proDate = DateTime.now();
-      //       });
-      //     }
-      //     if (_expDate == null) {
-      //       setState(() {
-      //         _expDate = DateTime.now().add(Duration(days: 3));
-      //       });
-      //     }
+      //check if empty
+      if (formKey.currentState.validate()) {
+        try {
+          await _firestore.collection('products').doc(_id).update({
+            //check if null
+            'titleAr': _titleAr == null
+                ? allProducstList
+                    .where((p) => (p.id == _id))
+                    .toList()[0]
+                    .titleAr
+                : _titleAr,
+            'titleEn': _titleEn == null
+                ? allProducstList
+                    .where((p) => (p.id == _id))
+                    .toList()[0]
+                    .titleEn
+                : _titleEn,
+            'type': _dropdownValueType == null
+                ? allProducstList.where((p) => (p.id == _id)).toList()[0].type
+                : _dropdownValueType,
+            'price': _price == null
+                ? allProducstList.where((p) => (p.id == _id)).toList()[0].price
+                : double.parse(_price),
+            'price_description': _dropdownValueUnit == null
+                ? allProducstList
+                    .where((p) => (p.id == _id))
+                    .toList()[0]
+                    .priceDescription
+                : _dropdownValueUnit,
+            'weight': _weight == null || _weight.isEmpty
+                ? allProducstList.where((p) => (p.id == _id)).toList()[0].weight
+                : double.parse(_weight),
+            'color': _currentColor == null
+                ? allProducstList
+                    .where((p) => (p.id == _id))
+                    .toList()[0]
+                    .color
+                    .toString()
+                : _currentColor.toString(),
+            'quantity': _quantity == null
+                ? allProducstList
+                    .where((p) => (p.id == _id))
+                    .toList()[0]
+                    .quantity
+                : double.parse(_quantity),
+            'production_date': _proDate == null
+                ? (allProducstList
+                    .where((p) => (p.id == _id))
+                    .toList()[0]
+                    .proDate)
+                : DateFormat.yMd().format(_proDate),
+            'expiration_date': _expDate == null
+                ? allProducstList
+                    .where((p) => (p.id == _id))
+                    .toList()[0]
+                    .expDate
+                : DateFormat.yMd().format(_expDate),
+          });
 
-      //     try {
-      //       ref = await _firestore.collection('products').add({
-      //         'titleAr': _newTitleArController.text.trim(),
-      //         'titleEn':
-      //             _newTitleEnController.text.trim().substring(0, 1).toUpperCase() +
-      //                 _newTitleEnController.text.trim().substring(1),
-      //         'type': _dropdownValueType,
-      //         'price': double.parse(_newPriceController.text.trim()),
-      //         'price_description': _dropdownValueUnit,
-      //         'weight': double.parse(_newWeightController.text.trim()),
-      //         'color': _currentColor.toString(),
-      //         'quantity': double.parse(_newQuantityController.text.trim()),
-      //         'production_date': DateFormat.yMd().format(_proDate),
-      //         'expiration_date': DateFormat.yMd().format(_expDate),
-      //         'is_selected': false,
-      //         'is_favorite': false,
-      //       });
-      //       if (_image != null) {
-      //         _key.currentState.removeCurrentSnackBar();
-      //         _key.currentState.showSnackBar((SnackBar(
-      //             content: Text(getTranslated(context, 'uploadingImage')))));
+          if (_imageFile != null) {
+            _key.currentState.removeCurrentSnackBar();
+            _key.currentState.showSnackBar((SnackBar(
+                content: Text(getTranslated(context, 'uploadingImage')))));
+            String _url = await _uploadImageAndGetURL(_id, _imageFile);
+            await _firestore
+                .collection('products')
+                .doc(_id)
+                .update({"image": _url});
+          }
 
-      //         String _url = await _uploadImageAndGetURL(ref.id, _imageFile);
-
-      //         await ref.update({"image": _url});
-      //       }
-
-      //       _key.currentState.removeCurrentSnackBar();
-      //       _key.currentState.showSnackBar((SnackBar(
-      //           content: Text(getTranslated(context, 'successfullAdd')))));
-      //       //to let the user see the snackBar
-      //       Future.delayed(Duration(seconds: 1), () {
-      //         Navigator.pop(context);
-      //       });
-      //     } catch (ex) {
-      //       print(ex);
-      //       _key.currentState
-      //           .showSnackBar((SnackBar(content: Text(ex.toString()))));
-      //     }
-      //   }
-    }
-
-    // Future<String> _uploadImageAndGetURL(String fileName, File file) async {
-    //   FirebaseStorage _storage = FirebaseStorage.instance;
-    //   StorageUploadTask _task = _storage
-    //       .ref()
-    //       .child(fileName)
-    //       .putFile(file, StorageMetadata(contentType: 'image/png'));
-    //   final String _downloadURL =
-    //       await (await _task.onComplete).ref.getDownloadURL();
-    //   return _downloadURL;
-    // }
-
-    String _getType(String _input) {
-      if (_input == getTranslated(context, 'vegetables')) {
-        setState(() {
-          _dropdownValueType = 'vegetables';
-        });
-      }
-      if (_input == getTranslated(context, 'fruits')) {
-        setState(() {
-          _dropdownValueType = 'fruits';
-        });
-      }
-      if (_input == getTranslated(context, 'herbs')) {
-        setState(() {
-          _dropdownValueType = 'herbs';
-        });
-      }
-      return _dropdownValueType;
-    }
-
-    String _getUnit(String _input) {
-      if (_input == getTranslated(context, 'perKilo')) {
-        setState(() {
-          _dropdownValueUnit = 'perKilo';
-        });
-      }
-      if (_input == getTranslated(context, 'perUnit')) {
-        setState(() {
-          _dropdownValueUnit = 'perUnit';
-        });
-      }
-      if (_input == getTranslated(context, 'perBag')) {
-        setState(() {
-          _dropdownValueUnit = 'perBag';
-        });
-      }
-      if (_input == getTranslated(context, 'perBox')) {
-        setState(() {
-          _dropdownValueUnit = 'perBox';
-        });
-      }
-      return _dropdownValueUnit;
-    }
-
-    void changeColor(Color color) => setState(() {
-          _currentColor = color;
-          Navigator.pop(context);
-        });
-
-    void _add() {
-      setState(() {
-        _quantity++;
-        _newQuantityController =
-            TextEditingController(text: _quantity.toString());
-        print(_quantity);
-        print(_newQuantityController);
-      });
-    }
-
-    void _remove() {
-      if (_quantity <= 1) {
-        setState(() {
-          _quantity = 1;
-          _newQuantityController = TextEditingController(text: '$_quantity');
-        });
-      }
-      if (_quantity > 1)
-        setState(() {
-          _quantity--;
-          _newQuantityController = TextEditingController(text: '$_quantity');
-        });
-    }
-
-    void _proDatePicker() {
-      showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2010),
-        lastDate: DateTime.now(),
-      ).then((pickedDate) {
-        if (pickedDate == null) {
-          return;
+          _key.currentState.removeCurrentSnackBar();
+          _key.currentState.showSnackBar((SnackBar(
+              content: Text(getTranslated(context, 'successfullAdd')))));
+          //to let the user see the snackBar
+          Future.delayed(Duration(seconds: 1), () {
+            Navigator.pop(context);
+          });
+        } catch (ex) {
+          print(ex);
+          _key.currentState
+              .showSnackBar((SnackBar(content: Text(ex.toString()))));
         }
-        setState(
-          () {
-            _proDate = pickedDate;
-          },
-        );
-      });
-    }
-
-    void _expDatePicker() {
-      showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2090),
-      ).then((pickedDate) {
-        if (pickedDate == null) {
-          return;
-        }
-        setState(
-          () {
-            _expDate = pickedDate;
-          },
-        );
-      });
+      }
     }
 
     return Scaffold(
       key: _key,
       resizeToAvoidBottomInset: false,
-      backgroundColor: _currentColor,
+      backgroundColor: _currentColor == null
+          ? allProducstList.where((p) => (p.id == _id)).toList()[0].color
+          : _currentColor,
       body: (allProducstList != null)
           ? ListView(
               padding: EdgeInsets.all(0),
@@ -294,12 +274,13 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
+                      //Back button
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
                         child: Container(
-                          width: (width) * 0.07,
+                          width: (width) * 0.12,
                           height: (height) * 0.07,
                           decoration: BoxDecoration(
                             color: Theme.of(context).canvasColor,
@@ -316,10 +297,64 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                           ),
                         ),
                       ),
-                      ColorPickerWidget(_currentColor, changeColor),
+                      //Picking color button
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Select a color'),
+                                content: SingleChildScrollView(
+                                  child: Container(
+                                    height: (height) * 0.2,
+                                    child: BlockPicker(
+                                      pickerColor: allProducstList
+                                          .where((p) => (p.id == _id))
+                                          .toList()[0]
+                                          .color,
+                                      onColorChanged: (value) {
+                                        setState(() {
+                                          _currentColor = value;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                      availableColors: [
+                                        Color(0xffffef62),
+                                        Color(0xFF9791f4),
+                                        Color(0xFF83e06f),
+                                        Color(0xFFf9913e),
+                                        Color(0xFFef8bed),
+                                        Color(0xFFff5562),
+                                        Color(0xFF5cbcff),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          width: (width) * 0.12,
+                          height: (height) * 0.07,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).canvasColor,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(15),
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.color_lens,
+                            color: Colors.black,
+                            size: 28,
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
+                //Picking Image area
                 Center(
                   child: SizedBox(
                     height: (height) * 0.3,
@@ -335,11 +370,17 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                       },
                       child: _imageFile == null
                           ? Image.network(
-                              _image,
+                              allProducstList
+                                  .where((p) => (p.id == _id))
+                                  .toList()[0]
+                                  .image,
                             )
                           : Image.file(_imageFile),
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: height * 0.04,
                 ),
                 Container(
                   width: double.infinity,
@@ -363,58 +404,182 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                     ),
                     child: Padding(
                       padding:
-                          EdgeInsets.only(top: 42.0, right: 32.0, left: 15.0),
+                          EdgeInsets.only(top: 20.0, right: 32.0, left: 15.0),
                       child: Form(
                         key: formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            TitleFieldWidget(
-                              titleHint: _titleArHint,
-                              titleController: _newTitleArController,
+                            // Arabic title text field
+                            Row(
+                              children: [
+                                Container(
+                                  height: (height) * 0.08,
+                                  width: (width) * 0.5,
+                                  child: TextFormField(
+                                    initialValue: allProducstList
+                                        .where((p) => (p.id == _id))
+                                        .toList()[0]
+                                        .titleAr,
+                                    decoration: InputDecoration(
+                                      hintText: _titleArHint,
+                                    ),
+                                    keyboardType: TextInputType.name,
+                                    cursorColor: Theme.of(context).primaryColor,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _titleAr = newValue;
+                                      });
+                                    },
+                                    validator: (String input) {
+                                      if (input.isEmpty) {
+                                        return getTranslated(
+                                            context, 'required');
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                            TitleFieldWidget(
-                              titleHint: _titleEnHint,
-                              titleController: _newTitleEnController,
+                            // English title text field
+                            Row(
+                              children: [
+                                Container(
+                                  height: (height) * 0.08,
+                                  width: (width) * 0.5,
+                                  child: TextFormField(
+                                    initialValue: allProducstList
+                                        .where((p) => (p.id == _id))
+                                        .toList()[0]
+                                        .titleEn,
+                                    decoration: InputDecoration(
+                                      hintText: _titleEnHint,
+                                    ),
+                                    keyboardType: TextInputType.name,
+                                    cursorColor: Theme.of(context).primaryColor,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _titleEn = newValue;
+                                      });
+                                    },
+                                    validator: (String input) {
+                                      if (input.isEmpty) {
+                                        return getTranslated(
+                                            context, 'required');
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
                             Row(
                               children: <Widget>[
+                                //Type dropdown list
                                 DropdownWidget(
                                   hint: _typeHint,
-                                  value: _dropdownValueType,
+                                  initValue: getTranslated(
+                                      context,
+                                      allProducstList
+                                          .where((p) => (p.id == _id))
+                                          .toList()[0]
+                                          .type),
+                                  newValue: _dropdownValueType,
                                   getValue: _getType,
                                   valuesList: _typeList,
                                 ),
                                 SizedBox(
                                   width: (width) * 0.03,
                                 ),
-                                DoubleFieldWidget(
-                                  doubleHint: _priceHint,
-                                  doubleController: _newPriceController,
-                                  isKilo: false,
-                                  validateRelated: _dropdownValueType,
+                                //Price text field
+                                Container(
+                                  height: (height) * 0.08,
+                                  width: (width) * 0.17,
+                                  child: TextFormField(
+                                    initialValue: allProducstList
+                                        .where((p) => (p.id == _id))
+                                        .toList()[0]
+                                        .price
+                                        .toString(),
+                                    decoration: InputDecoration(
+                                      hintText: _priceHint,
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    cursorColor: Theme.of(context).primaryColor,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp("[0-9.]")),
+                                    ],
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _price = newValue;
+                                      });
+                                    },
+                                    validator: (String input) {
+                                      if (input.isEmpty) {
+                                        return getTranslated(
+                                            context, 'required');
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
                             Row(
                               children: <Widget>[
+                                //Unit dropdown list
                                 DropdownWidget(
                                   hint: _priceDescriptionHint,
-                                  value: _dropdownValueUnit,
+                                  initValue: getTranslated(
+                                      context,
+                                      allProducstList
+                                          .where((p) => (p.id == _id))
+                                          .toList()[0]
+                                          .priceDescription),
+                                  newValue: _dropdownValueUnit,
                                   getValue: _getUnit,
                                   valuesList: _priceDescriptionList,
                                 ),
                                 SizedBox(
                                   width: (width) * 0.03,
                                 ),
-                                DoubleFieldWidget(
-                                  doubleHint: _kilosHint,
-                                  doubleController: _newWeightController,
-                                  isKilo: true,
-                                  validateRelated: _dropdownValueUnit,
-                                ),
-                                SizedBox(
-                                  width: (width) * 0.05,
+                                //weight text field
+                                Container(
+                                  height: (height) * 0.08,
+                                  width: (width) * 0.17,
+                                  child: TextFormField(
+                                    initialValue: allProducstList
+                                        .where((p) => (p.id == _id))
+                                        .toList()[0]
+                                        .weight
+                                        .toString(),
+                                    decoration: InputDecoration(
+                                      hintText: _weightHint,
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    cursorColor: Theme.of(context).primaryColor,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp("[0-9.]")),
+                                    ],
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _weight = newValue;
+                                      });
+                                    },
+                                    validator: (String input) {
+                                      if (input.isEmpty) {
+                                        if (_dropdownValueUnit == 'perBox' ||
+                                            _dropdownValueUnit == 'perBag') {
+                                          return getTranslated(
+                                              context, 'required');
+                                        }
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
@@ -423,15 +588,23 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                             ),
                             Row(
                               children: [
+                                //Production date picking
                                 DatePickingWidget(
-                                  textHint: _proDateHint + _proDateField,
-                                  color: _currentColor,
+                                  textHint: _proDateHint +
+                                      allProducstList
+                                          .where((p) => (p.id == _id))
+                                          .toList()[0]
+                                          .proDate,
                                   pickedDate: _proDate,
                                   pickerFunction: _proDatePicker,
                                 ),
+                                //Expiration date picking
                                 DatePickingWidget(
-                                  textHint: _expDateHint + _expDateField,
-                                  color: _currentColor,
+                                  textHint: _expDateHint +
+                                      allProducstList
+                                          .where((p) => (p.id == _id))
+                                          .toList()[0]
+                                          .expDate,
                                   pickedDate: _expDate,
                                   pickerFunction: _expDatePicker,
                                 ),
@@ -440,43 +613,43 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
+                                //Quantity text field
                                 Row(
                                   children: <Widget>[
                                     Container(
-                                      width: (width) * 0.13,
+                                      width: (width) * 0.39,
                                       height: (height) * 0.1,
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: isArabic(context)
-                                              ? Radius.circular(0)
-                                              : Radius.circular(15),
-                                          bottomLeft: isArabic(context)
-                                              ? Radius.circular(0)
-                                              : Radius.circular(15),
-                                          topRight: isArabic(context)
-                                              ? Radius.circular(15)
-                                              : Radius.circular(0),
-                                          bottomRight: isArabic(context)
-                                              ? Radius.circular(15)
-                                              : Radius.circular(0),
-                                        ),
-                                      ),
-                                      child: IconButton(
-                                        icon: Icon(Icons.remove),
-                                        color: Colors.black,
-                                        onPressed: _remove,
-                                      ),
-                                    ),
-                                    Container(
-                                      color: Colors.grey[300],
-                                      width: (width) * 0.13,
-                                      height: (height) * 0.1,
+                                          color: Colors.grey[300],
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(15),
+                                          )),
                                       child: Center(
                                         child: TextFormField(
-                                          controller: _newQuantityController,
+                                          initialValue: allProducstList
+                                              .where((p) => (p.id == _id))
+                                              .toList()[0]
+                                              .quantity
+                                              .toString()
+                                              .substring(
+                                                  0,
+                                                  allProducstList
+                                                      .where(
+                                                          (p) => (p.id == _id))
+                                                      .toList()[0]
+                                                      .quantity
+                                                      .toString()
+                                                      .indexOf('.')),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _quantity = value;
+                                            });
+                                          },
                                           textAlign: TextAlign.center,
                                           decoration: InputDecoration(
+                                            labelText: '  ' +
+                                                getTranslated(
+                                                    context, 'quantity'),
                                             border: InputBorder.none,
                                           ),
                                           keyboardType: TextInputType.number,
@@ -489,44 +662,31 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                           ),
+                                          validator: (String input) {
+                                            if (input.isEmpty) {
+                                              return getTranslated(
+                                                  context, 'required');
+                                            }
+                                            return null;
+                                          },
                                         ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: (width) * 0.13,
-                                      height: (height) * 0.1,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[300],
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: isArabic(context)
-                                              ? Radius.circular(15)
-                                              : Radius.circular(0),
-                                          bottomLeft: isArabic(context)
-                                              ? Radius.circular(15)
-                                              : Radius.circular(0),
-                                          topRight: isArabic(context)
-                                              ? Radius.circular(0)
-                                              : Radius.circular(15),
-                                          bottomRight: isArabic(context)
-                                              ? Radius.circular(0)
-                                              : Radius.circular(15),
-                                        ),
-                                      ),
-                                      child: IconButton(
-                                        icon: Icon(Icons.add),
-                                        color: Colors.black,
-                                        onPressed: _add,
                                       ),
                                     ),
                                   ],
                                 ),
+                                //Save button
                                 GestureDetector(
                                   onTap: _updateProduct,
                                   child: Container(
                                     height: (height) * 0.1,
                                     width: (width) * 0.4,
                                     decoration: BoxDecoration(
-                                      color: _currentColor,
+                                      color: _currentColor == null
+                                          ? allProducstList
+                                              .where((p) => (p.id == _id))
+                                              .toList()[0]
+                                              .color
+                                          : _currentColor,
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(20),
                                       ),

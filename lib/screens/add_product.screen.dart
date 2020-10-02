@@ -54,6 +54,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
           _expDate = DateTime.now().add(Duration(days: 3));
         });
       }
+      if (_newWeightController.text.trim().isEmpty ||
+          _newWeightController.text.trim() == null) {
+        _newWeightController.text = '0.0';
+      }
 
       try {
         ref = await _firestore.collection('products').add({
@@ -69,6 +73,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           'quantity': double.parse(_newQuantityController.text.trim()),
           'production_date': DateFormat.yMd().format(_proDate),
           'expiration_date': DateFormat.yMd().format(_expDate),
+          'created': DateTime.now(),
           'is_selected': false,
           'is_favorite': false,
         });
@@ -156,27 +161,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
         Navigator.pop(context);
       });
 
-  void _add() {
-    setState(() {
-      _quantity++;
-      _newQuantityController = TextEditingController(text: '$_quantity');
-    });
-  }
-
-  void _remove() {
-    if (_quantity <= 1) {
-      setState(() {
-        _quantity = 1;
-        _newQuantityController = TextEditingController(text: '$_quantity');
-      });
-    }
-    if (_quantity > 1)
-      setState(() {
-        _quantity--;
-        _newQuantityController = TextEditingController(text: '$_quantity');
-      });
-  }
-
   void _proDatePicker() {
     showDatePicker(
       context: context,
@@ -256,12 +240,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
+                //Back button
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
                   },
                   child: Container(
-                    width: (width) * 0.07,
+                    width: (width) * 0.12,
                     height: (height) * 0.07,
                     decoration: BoxDecoration(
                       color: Theme.of(context).canvasColor,
@@ -278,10 +263,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ),
                   ),
                 ),
+                //Picking color button
                 ColorPickerWidget(_currentColor, changeColor),
               ],
             ),
           ),
+          //Picking Image area
           Center(
             child: SizedBox(
               height: (height) * 0.3,
@@ -301,6 +288,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     : Image.file(_image),
               ),
             ),
+          ),
+          SizedBox(
+            height: height * 0.04,
           ),
           Container(
             width: double.infinity,
@@ -323,31 +313,35 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 top: 0.0,
               ),
               child: Padding(
-                padding: EdgeInsets.only(top: 42.0, right: 32.0, left: 15.0),
+                padding: EdgeInsets.only(top: 20.0, right: 32.0, left: 15.0),
                 child: Form(
                   key: formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      // Arabic title text field
                       TitleFieldWidget(
                         titleHint: _titleArHint,
                         titleController: _newTitleArController,
                       ),
+                      // English title text field
                       TitleFieldWidget(
                         titleHint: _titleEnHint,
                         titleController: _newTitleEnController,
                       ),
                       Row(
                         children: <Widget>[
+                          //Type dropdown list
                           DropdownWidget(
                             hint: _typeHint,
-                            value: _dropdownValueType,
+                            newValue: _dropdownValueType,
                             getValue: _getType,
                             valuesList: _typeList,
                           ),
                           SizedBox(
                             width: (width) * 0.03,
                           ),
+                          //Price text field
                           DoubleFieldWidget(
                             doubleHint: _priceHint,
                             doubleController: _newPriceController,
@@ -358,23 +352,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                       Row(
                         children: <Widget>[
+                          //Unit dropdown list
                           DropdownWidget(
                             hint: _priceDescriptionHint,
-                            value: _dropdownValueUnit,
+                            newValue: _dropdownValueUnit,
                             getValue: _getUnit,
                             valuesList: _priceDescriptionList,
                           ),
                           SizedBox(
                             width: (width) * 0.03,
                           ),
+                          //weight text field
                           DoubleFieldWidget(
                             doubleHint: _kilosHint,
                             doubleController: _newWeightController,
                             isKilo: true,
                             validateRelated: _dropdownValueUnit,
-                          ),
-                          SizedBox(
-                            width: (width) * 0.05,
                           ),
                         ],
                       ),
@@ -383,15 +376,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                       Row(
                         children: [
+                          //Production date picking
                           DatePickingWidget(
                             textHint: _proDateHint,
-                            color: _currentColor,
                             pickedDate: _proDate,
                             pickerFunction: _proDatePicker,
                           ),
+                          //Expiration date picking
                           DatePickingWidget(
                             textHint: _expDateHint,
-                            color: _currentColor,
                             pickedDate: _expDate,
                             pickerFunction: _expDatePicker,
                           ),
@@ -400,43 +393,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
+                          //Quantity text field
                           Row(
                             children: <Widget>[
                               Container(
-                                width: (width) * 0.13,
+                                width: (width) * 0.39,
                                 height: (height) * 0.1,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: isArabic(context)
-                                        ? Radius.circular(0)
-                                        : Radius.circular(15),
-                                    bottomLeft: isArabic(context)
-                                        ? Radius.circular(0)
-                                        : Radius.circular(15),
-                                    topRight: isArabic(context)
-                                        ? Radius.circular(15)
-                                        : Radius.circular(0),
-                                    bottomRight: isArabic(context)
-                                        ? Radius.circular(15)
-                                        : Radius.circular(0),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  icon: Icon(Icons.remove),
-                                  color: Colors.black,
-                                  onPressed: _remove,
-                                ),
-                              ),
-                              Container(
-                                color: Colors.grey[300],
-                                width: (width) * 0.13,
-                                height: (height) * 0.1,
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(15),
+                                    )),
                                 child: Center(
                                   child: TextFormField(
                                     controller: _newQuantityController,
                                     textAlign: TextAlign.center,
                                     decoration: InputDecoration(
+                                      labelText: '  ' +
+                                          getTranslated(context, 'quantity'),
                                       border: InputBorder.none,
                                     ),
                                     keyboardType: TextInputType.number,
@@ -449,37 +423,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    validator: (String input) {
+                                      if (input.isEmpty) {
+                                        return getTranslated(
+                                            context, 'required');
+                                      }
+                                      return null;
+                                    },
                                   ),
-                                ),
-                              ),
-                              Container(
-                                width: (width) * 0.13,
-                                height: (height) * 0.1,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: isArabic(context)
-                                        ? Radius.circular(15)
-                                        : Radius.circular(0),
-                                    bottomLeft: isArabic(context)
-                                        ? Radius.circular(15)
-                                        : Radius.circular(0),
-                                    topRight: isArabic(context)
-                                        ? Radius.circular(0)
-                                        : Radius.circular(15),
-                                    bottomRight: isArabic(context)
-                                        ? Radius.circular(0)
-                                        : Radius.circular(15),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  icon: Icon(Icons.add),
-                                  color: Colors.black,
-                                  onPressed: _add,
                                 ),
                               ),
                             ],
                           ),
+                          //Save button
                           GestureDetector(
                             onTap: _addProduct,
                             child: Container(

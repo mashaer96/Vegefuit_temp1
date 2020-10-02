@@ -7,7 +7,7 @@ class Database {
       FirebaseFirestore.instance.collection("products");
 
   List<Product> __productsListFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) {
+    var list = snapshot.docs.map((doc) {
       return Product(
         id: doc.id ?? '',
         titleAr: doc.data()['titleAr'] ?? '',
@@ -25,8 +25,15 @@ class Database {
         quantity: doc.data()['quantity'] ?? 1.0,
         proDate: doc.data()['production_date'],
         expDate: doc.data()['expiration_date'],
+        created: doc.data()['created'].toDate(),
       );
     }).toList();
+
+    list.sort((a, b) {
+      return b.created.compareTo(a.created);
+    });
+    
+    return list;
   }
 
   Stream<List<Product>> get products {

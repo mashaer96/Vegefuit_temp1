@@ -13,23 +13,14 @@ class StockScreen extends StatefulWidget {
 }
 
 class _StockScreenState extends State<StockScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     List<Product> allProductList = Provider.of<List<Product>>(context);
-    List<Product> selestedProductList =
-        allProductList.where((p) => (p.isSelected == true)).toList();
 
     return Scaffold(
+      key: _key,
       body: Container(
         width: (MediaQuery.of(context).size.width) * 1.0,
         child: Column(
@@ -38,7 +29,7 @@ class _StockScreenState extends State<StockScreen> {
               Header('currentStock'),
               Container(
                 child: Expanded(
-                  child: (selestedProductList != null)
+                  child: (allProductList != null)
                       ? ListView.builder(
                           padding: const EdgeInsets.only(
                             top: 20.0,
@@ -46,24 +37,63 @@ class _StockScreenState extends State<StockScreen> {
                             right: 20.0,
                             bottom: 20.0,
                           ),
-                          itemCount: selestedProductList.length,
+                          itemCount: allProductList
+                              .where((p) => (p.isSelected == true))
+                              .toList()
+                              .reversed
+                              .toList()
+                              .length,
                           itemBuilder: (ctx, i) {
                             return ListItem(
+                                scaffoldKey: _key,
+                                id: allProductList
+                                    .where((p) => (p.isSelected == true))
+                                    .toList()
+                                    .reversed
+                                    .toList()[i]
+                                    .id,
                                 title: isArabic(context)
-                                    ? selestedProductList[i].titleAr
-                                    : selestedProductList[i].titleEn,
-                                price: selestedProductList[i].price,
-                                color: selestedProductList[i].color,
-                                imageUrl: selestedProductList[i].image);
+                                    ? allProductList
+                                        .where((p) => (p.isSelected == true))
+                                        .toList()
+                                        .reversed
+                                        .toList()[i]
+                                        .titleAr
+                                    : allProductList
+                                        .where((p) => (p.isSelected == true))
+                                        .toList()
+                                        .reversed
+                                        .toList()[i]
+                                        .titleEn,
+                                price: allProductList
+                                    .where((p) => (p.isSelected == true))
+                                    .toList()
+                                    .reversed
+                                    .toList()[i]
+                                    .price,
+                                quantity: allProductList
+                                    .where((p) => (p.isSelected == true))
+                                    .toList()
+                                    .reversed
+                                    .toList()[i]
+                                    .quantity,
+                                color: allProductList
+                                    .where((p) => (p.isSelected == true))
+                                    .toList()
+                                    .reversed
+                                    .toList()[i]
+                                    .color,
+                                imageUrl: allProductList
+                                    .where((p) => (p.isSelected == true))
+                                    .toList()
+                                    .reversed
+                                    .toList()[i]
+                                    .image);
                           },
                         )
                       : Center(
                           child: Text('Loading...'),
                         ),
-
-                  // : setState(() {
-                  //     _showSpinner = true;
-                  //   }),
                 ),
               ),
             ]),
@@ -71,5 +101,3 @@ class _StockScreenState extends State<StockScreen> {
     );
   }
 }
-
-// mixin _SelectProductsScreenState {}

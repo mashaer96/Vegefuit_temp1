@@ -2,8 +2,6 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-//enum Type { Vegetables, Fruits, Herbs }
-
 class Product {
   final String id;
   String titleAr;
@@ -19,6 +17,7 @@ class Product {
   double quantity;
   String proDate;
   String expDate;
+  DateTime created;
 
   Product({
     @required this.id,
@@ -31,9 +30,10 @@ class Product {
     @required this.type,
     @required this.isFavorite,
     @required this.isSelected,
-    this.weight,
+    @required this.weight,
     @required this.quantity,
     @required this.proDate,
     @required this.expDate,
+    @required this.created,
   });
 }

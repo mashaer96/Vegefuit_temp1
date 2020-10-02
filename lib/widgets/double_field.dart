@@ -25,7 +25,7 @@ class DoubleFieldWidget extends StatelessWidget {
       child: TextFormField(
         controller: doubleController,
         decoration: InputDecoration(
-          hintText: doubleHint.toString(),
+          hintText: doubleHint,
         ),
         keyboardType: TextInputType.number,
         cursorColor: Theme.of(context).primaryColor,
@@ -35,18 +35,15 @@ class DoubleFieldWidget extends StatelessWidget {
         validator: (String input) {
           if (isKilo) {
             if (input.isEmpty) {
-              if (validateRelated == getTranslated(context, 'perBox') ||
-                  validateRelated == getTranslated(context, 'perBag')) {
+              if (validateRelated == 'perBox' || validateRelated == 'perBag') {
                 return getTranslated(context, 'required');
               }
-              return null;
             }
           } else {
             if (input.isEmpty) {
               return getTranslated(context, 'required');
             }
           }
-          return null;
         },
       ),
     );

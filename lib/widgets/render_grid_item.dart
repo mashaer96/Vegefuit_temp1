@@ -36,8 +36,8 @@ class RenderGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final height = mq.size.height - mq.padding.top;
-    final width = mq.size.width;
+    //final height = mq.size.height - mq.padding.top;
+    //final width = mq.size.width;
     return InkWell(
       onTap: () => _selectedProduct(context),
       splashColor: Theme.of(context).primaryColor,

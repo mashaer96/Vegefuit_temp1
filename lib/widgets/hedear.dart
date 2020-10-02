@@ -34,7 +34,7 @@ class Header extends StatelessWidget {
               //       );
             },
             child: Container(
-              width: (width) * 0.07,
+              width: (width) * 0.12,
               height: (height) * 0.07,
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
