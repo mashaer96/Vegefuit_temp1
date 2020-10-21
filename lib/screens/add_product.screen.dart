@@ -24,6 +24,8 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   final formKey = GlobalKey<FormState>();
   GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   TextEditingController _newTitleArController = TextEditingController(text: '');
   TextEditingController _newTitleEnController = TextEditingController(text: '');
   String _dropdownValueType;
@@ -32,14 +34,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
   TextEditingController _newWeightController = TextEditingController(text: '');
   TextEditingController _newQuantityController =
       TextEditingController(text: '1');
-  int _quantity = 1;
   Color _currentColor = Color(0xFF79DE64);
+  File _image;
   //DateTime _selectedDate;
   DateTime _proDate;
   DateTime _expDate;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  File _image;
 
   _addProduct() async {
     if (formKey.currentState.validate()) {
@@ -75,7 +74,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
           'expiration_date': DateFormat.yMd().format(_expDate),
           'created': DateTime.now(),
           'is_selected': false,
-          'is_favorite': false,
         });
         if (_image != null) {
           _key.currentState.removeCurrentSnackBar();
@@ -225,95 +223,99 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
     return Scaffold(
       key: _key,
-      resizeToAvoidBottomInset: false,
       backgroundColor: _currentColor,
-      body: ListView(
-        padding: EdgeInsets.all(0),
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(
-              left: 24.0,
-              right: 24.0,
-              bottom: 24.0,
-              top: 48.0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                //Back button
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    width: (width) * 0.12,
-                    height: (height) * 0.07,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).canvasColor,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15),
+      body: new InkWell(
+        // to dismiss the keyboard when the user tabs out of the TextField
+        splashColor: Colors.transparent,
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: ListView(
+          padding: EdgeInsets.all(0),
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                bottom: 24.0,
+                top: 48.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  //Back button
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      width: (width) * 0.12,
+                      height: (height) * 0.07,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).canvasColor,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(15),
+                        ),
+                      ),
+                      child: Icon(
+                        isArabic(context)
+                            ? Icons.keyboard_arrow_right
+                            : Icons.keyboard_arrow_left,
+                        color: Colors.black,
+                        size: 28,
                       ),
                     ),
-                    child: Icon(
-                      isArabic(context)
-                          ? Icons.keyboard_arrow_right
-                          : Icons.keyboard_arrow_left,
-                      color: Colors.black,
-                      size: 28,
-                    ),
                   ),
+                  //Picking color button
+                  ColorPickerWidget(_currentColor, changeColor),
+                ],
+              ),
+            ),
+            //Picking Image area
+            Center(
+              child: SizedBox(
+                height: (height) * 0.3,
+                child: GestureDetector(
+                  onTap: () async {
+                    File image =
+                        // ignore: deprecated_member_use
+                        await ImagePicker.pickImage(
+                            source: ImageSource.gallery);
+                    setState(() {
+                      _image = image;
+                    });
+                  },
+                  child: _image == null
+                      ? Image.asset(
+                          'assets/images/camera.png',
+                        )
+                      : Image.file(_image),
                 ),
-                //Picking color button
-                ColorPickerWidget(_currentColor, changeColor),
-              ],
-            ),
-          ),
-          //Picking Image area
-          Center(
-            child: SizedBox(
-              height: (height) * 0.3,
-              child: GestureDetector(
-                onTap: () async {
-                  File image =
-                      // ignore: deprecated_member_use
-                      await ImagePicker.pickImage(source: ImageSource.gallery);
-                  setState(() {
-                    _image = image;
-                  });
-                },
-                child: _image == null
-                    ? Image.asset(
-                        'assets/images/camera.png',
-                      )
-                    : Image.file(_image),
               ),
             ),
-          ),
-          SizedBox(
-            height: height * 0.04,
-          ),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Theme.of(context).canvasColor,
-              borderRadius: BorderRadius.only(
-                topLeft: isArabic(context)
-                    ? Radius.circular(300)
-                    : Radius.circular(0),
-                topRight: isArabic(context)
-                    ? Radius.circular(0)
-                    : Radius.circular(300),
-              ),
+            SizedBox(
+              height: height * 0.04,
             ),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                left: 0.0,
-                right: 0.0,
-                bottom: mq.viewInsets.bottom + 90,
-                top: 0.0,
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).canvasColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: isArabic(context)
+                      ? Radius.circular(300)
+                      : Radius.circular(0),
+                  topRight: isArabic(context)
+                      ? Radius.circular(0)
+                      : Radius.circular(300),
+                ),
               ),
               child: Padding(
-                padding: EdgeInsets.only(top: 20.0, right: 32.0, left: 15.0),
+                padding: EdgeInsets.only(
+                  top: 20.0,
+                  right: 32.0,
+                  left: 15.0,
+                  bottom: mq.viewInsets.bottom,
+                ),
                 child: Form(
                   key: formKey,
                   child: Column(
@@ -466,8 +468,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -11,7 +11,6 @@ class Product {
   String image;
   Color color;
   String type;
-  bool isFavorite;
   bool isSelected;
   double weight;
   double quantity;
@@ -28,7 +27,6 @@ class Product {
     @required this.image,
     @required this.color,
     @required this.type,
-    @required this.isFavorite,
     @required this.isSelected,
     @required this.weight,
     @required this.quantity,
@@ -36,4 +34,12 @@ class Product {
     @required this.expDate,
     @required this.created,
   });
+
+  bool get isOutOfStuck {
+    if (quantity == 0 || isSelected == false) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

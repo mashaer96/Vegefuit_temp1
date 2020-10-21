@@ -15,11 +15,10 @@ class Database {
         price: doc.data()['price'] ?? 0.0,
         priceDescription: doc.data()['price_description'] ?? '',
         image: doc.data()['image'] ??
-            'https://firebasestorage.googleapis.com/v0/b/vegefruit-305c2.appspot.com/o/camera.png?alt=media&token=4da0a6d4-f44b-44d4-bb00-07ecf2154919',
+            'https://firebasestorage.googleapis.com/v0/b/newvegefruit.appspot.com/o/camera.png?alt=media&token=fb8c8384-03b3-43d7-b24b-a546b7bba8bc',
         color: Color(int.parse(doc.data()['color'].substring(6, 16))) ??
             Color(0xFF79DE64),
         type: doc.data()['type'] ?? '',
-        isFavorite: doc.data()['is_favorite'],
         isSelected: doc.data()['is_selected'],
         weight: doc.data()['weight'] ?? 0.0,
         quantity: doc.data()['quantity'] ?? 1.0,
@@ -32,7 +31,7 @@ class Database {
     list.sort((a, b) {
       return b.created.compareTo(a.created);
     });
-    
+
     return list;
   }
 

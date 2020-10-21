@@ -4,9 +4,9 @@ import '../localization/demo_localization.dart';
 import '../models/is_arabic.dart';
 //import '../screens/user_tabs_screen.dart';
 
-class Header extends StatelessWidget {
+class HeaderWithBack extends StatelessWidget {
   final String title;
-  const Header(this.title);
+  const HeaderWithBack(this.title);
 
   @override
   Widget build(BuildContext context) {

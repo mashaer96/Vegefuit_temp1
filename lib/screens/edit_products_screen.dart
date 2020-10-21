@@ -1,9 +1,9 @@
 import 'dart:core';
 import 'dart:io';
+import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -256,465 +256,478 @@ class _EditProductsScreenState extends State<EditProductsScreen> {
 
     return Scaffold(
       key: _key,
-      resizeToAvoidBottomInset: false,
       backgroundColor: _currentColor == null
-          ? allProducstList.where((p) => (p.id == _id)).toList()[0].color
+          ? (allProducstList != null
+              ? allProducstList.where((p) => (p.id == _id)).toList()[0].color
+              : null)
           : _currentColor,
       body: (allProducstList != null)
-          ? ListView(
-              padding: EdgeInsets.all(0),
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 24.0,
-                    right: 24.0,
-                    bottom: 24.0,
-                    top: 48.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      //Back button
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: (width) * 0.12,
-                          height: (height) * 0.07,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).canvasColor,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15),
-                            ),
-                          ),
-                          child: Icon(
-                            isArabic(context)
-                                ? Icons.keyboard_arrow_right
-                                : Icons.keyboard_arrow_left,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                        ),
-                      ),
-                      //Picking color button
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Select a color'),
-                                content: SingleChildScrollView(
-                                  child: Container(
-                                    height: (height) * 0.2,
-                                    child: BlockPicker(
-                                      pickerColor: allProducstList
-                                          .where((p) => (p.id == _id))
-                                          .toList()[0]
-                                          .color,
-                                      onColorChanged: (value) {
-                                        setState(() {
-                                          _currentColor = value;
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                      availableColors: [
-                                        Color(0xffffef62),
-                                        Color(0xFF9791f4),
-                                        Color(0xFF83e06f),
-                                        Color(0xFFf9913e),
-                                        Color(0xFFef8bed),
-                                        Color(0xFFff5562),
-                                        Color(0xFF5cbcff),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: Container(
-                          width: (width) * 0.12,
-                          height: (height) * 0.07,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).canvasColor,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(15),
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.color_lens,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                //Picking Image area
-                Center(
-                  child: SizedBox(
-                    height: (height) * 0.3,
-                    child: GestureDetector(
-                      onTap: () async {
-                        File image =
-                            // ignore: deprecated_member_use
-                            await ImagePicker.pickImage(
-                                source: ImageSource.gallery);
-                        setState(() {
-                          _imageFile = image;
-                        });
-                      },
-                      child: _imageFile == null
-                          ? Image.network(
-                              allProducstList
-                                  .where((p) => (p.id == _id))
-                                  .toList()[0]
-                                  .image,
-                            )
-                          : Image.file(_imageFile),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: height * 0.04,
-                ),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).canvasColor,
-                    borderRadius: BorderRadius.only(
-                      topLeft: isArabic(context)
-                          ? Radius.circular(300)
-                          : Radius.circular(0),
-                      topRight: isArabic(context)
-                          ? Radius.circular(0)
-                          : Radius.circular(300),
-                    ),
-                  ),
-                  child: SingleChildScrollView(
+          ? InkWell(
+              // to dismiss the keyboard when the user tabs out of the TextField
+              splashColor: Colors.transparent,
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+              child: ListView(
+                padding: EdgeInsets.all(0),
+                children: <Widget>[
+                  Padding(
                     padding: EdgeInsets.only(
-                      left: 0.0,
-                      right: 0.0,
-                      bottom: mq.viewInsets.bottom + 90,
-                      top: 0.0,
+                      left: 24.0,
+                      right: 24.0,
+                      bottom: 24.0,
+                      top: 48.0,
                     ),
-                    child: Padding(
-                      padding:
-                          EdgeInsets.only(top: 20.0, right: 32.0, left: 15.0),
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            // Arabic title text field
-                            Row(
-                              children: [
-                                Container(
-                                  height: (height) * 0.08,
-                                  width: (width) * 0.5,
-                                  child: TextFormField(
-                                    initialValue: allProducstList
-                                        .where((p) => (p.id == _id))
-                                        .toList()[0]
-                                        .titleAr,
-                                    decoration: InputDecoration(
-                                      hintText: _titleArHint,
-                                    ),
-                                    keyboardType: TextInputType.name,
-                                    cursorColor: Theme.of(context).primaryColor,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        _titleAr = newValue;
-                                      });
-                                    },
-                                    validator: (String input) {
-                                      if (input.isEmpty) {
-                                        return getTranslated(
-                                            context, 'required');
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        //Back button
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: (width) * 0.12,
+                            height: (height) * 0.07,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).canvasColor,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15),
+                              ),
                             ),
-                            // English title text field
-                            Row(
-                              children: [
-                                Container(
-                                  height: (height) * 0.08,
-                                  width: (width) * 0.5,
-                                  child: TextFormField(
-                                    initialValue: allProducstList
-                                        .where((p) => (p.id == _id))
-                                        .toList()[0]
-                                        .titleEn,
-                                    decoration: InputDecoration(
-                                      hintText: _titleEnHint,
-                                    ),
-                                    keyboardType: TextInputType.name,
-                                    cursorColor: Theme.of(context).primaryColor,
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        _titleEn = newValue;
-                                      });
-                                    },
-                                    validator: (String input) {
-                                      if (input.isEmpty) {
-                                        return getTranslated(
-                                            context, 'required');
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
+                            child: Icon(
+                              isArabic(context)
+                                  ? Icons.keyboard_arrow_right
+                                  : Icons.keyboard_arrow_left,
+                              color: Colors.black,
+                              size: 28,
                             ),
-                            Row(
-                              children: <Widget>[
-                                //Type dropdown list
-                                DropdownWidget(
-                                  hint: _typeHint,
-                                  initValue: getTranslated(
-                                      context,
-                                      allProducstList
+                          ),
+                        ),
+                        //Picking color button
+                        GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Select a color'),
+                                  content: SingleChildScrollView(
+                                    child: Container(
+                                      height: (height) * 0.2,
+                                      child: BlockPicker(
+                                        pickerColor: allProducstList
+                                            .where((p) => (p.id == _id))
+                                            .toList()[0]
+                                            .color,
+                                        onColorChanged: (value) {
+                                          setState(() {
+                                            _currentColor = value;
+                                          });
+                                          Navigator.pop(context);
+                                        },
+                                        availableColors: [
+                                          Color(0xffffef62),
+                                          Color(0xFF9791f4),
+                                          Color(0xFF83e06f),
+                                          Color(0xFFf9913e),
+                                          Color(0xFFef8bed),
+                                          Color(0xFFff5562),
+                                          Color(0xFF5cbcff),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            width: (width) * 0.12,
+                            height: (height) * 0.07,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).canvasColor,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15),
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.color_lens,
+                              color: Colors.black,
+                              size: 28,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  //Picking Image area
+                  Center(
+                    child: SizedBox(
+                      height: (height) * 0.3,
+                      child: GestureDetector(
+                        onTap: () async {
+                          File image =
+                              // ignore: deprecated_member_use
+                              await ImagePicker.pickImage(
+                                  source: ImageSource.gallery);
+                          setState(() {
+                            _imageFile = image;
+                          });
+                        },
+                        child: _imageFile == null
+                            ? Image.network(
+                                allProducstList
+                                    .where((p) => (p.id == _id))
+                                    .toList()[0]
+                                    .image,
+                              )
+                            : Image.file(_imageFile),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: height * 0.04,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: isArabic(context)
+                            ? Radius.circular(300)
+                            : Radius.circular(0),
+                        topRight: isArabic(context)
+                            ? Radius.circular(0)
+                            : Radius.circular(300),
+                      ),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(
+                        left: 0.0,
+                        right: 0.0,
+                        bottom: mq.viewInsets.bottom + 90,
+                        top: 0.0,
+                      ),
+                      child: Padding(
+                        padding:
+                            EdgeInsets.only(top: 20.0, right: 32.0, left: 15.0),
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              // Arabic title text field
+                              Row(
+                                children: [
+                                  Container(
+                                    height: (height) * 0.08,
+                                    width: (width) * 0.5,
+                                    child: TextFormField(
+                                      initialValue: allProducstList
                                           .where((p) => (p.id == _id))
                                           .toList()[0]
-                                          .type),
-                                  newValue: _dropdownValueType,
-                                  getValue: _getType,
-                                  valuesList: _typeList,
-                                ),
-                                SizedBox(
-                                  width: (width) * 0.03,
-                                ),
-                                //Price text field
-                                Container(
-                                  height: (height) * 0.08,
-                                  width: (width) * 0.17,
-                                  child: TextFormField(
-                                    initialValue: allProducstList
-                                        .where((p) => (p.id == _id))
-                                        .toList()[0]
-                                        .price
-                                        .toString(),
-                                    decoration: InputDecoration(
-                                      hintText: _priceHint,
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                    cursorColor: Theme.of(context).primaryColor,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp("[0-9.]")),
-                                    ],
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        _price = newValue;
-                                      });
-                                    },
-                                    validator: (String input) {
-                                      if (input.isEmpty) {
-                                        return getTranslated(
-                                            context, 'required');
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                //Unit dropdown list
-                                DropdownWidget(
-                                  hint: _priceDescriptionHint,
-                                  initValue: getTranslated(
-                                      context,
-                                      allProducstList
-                                          .where((p) => (p.id == _id))
-                                          .toList()[0]
-                                          .priceDescription),
-                                  newValue: _dropdownValueUnit,
-                                  getValue: _getUnit,
-                                  valuesList: _priceDescriptionList,
-                                ),
-                                SizedBox(
-                                  width: (width) * 0.03,
-                                ),
-                                //weight text field
-                                Container(
-                                  height: (height) * 0.08,
-                                  width: (width) * 0.17,
-                                  child: TextFormField(
-                                    initialValue: allProducstList
-                                        .where((p) => (p.id == _id))
-                                        .toList()[0]
-                                        .weight
-                                        .toString(),
-                                    decoration: InputDecoration(
-                                      hintText: _weightHint,
-                                    ),
-                                    keyboardType: TextInputType.number,
-                                    cursorColor: Theme.of(context).primaryColor,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp("[0-9.]")),
-                                    ],
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        _weight = newValue;
-                                      });
-                                    },
-                                    validator: (String input) {
-                                      if (input.isEmpty) {
-                                        if (_dropdownValueUnit == 'perBox' ||
-                                            _dropdownValueUnit == 'perBag') {
+                                          .titleAr,
+                                      decoration: InputDecoration(
+                                        hintText: _titleArHint,
+                                      ),
+                                      keyboardType: TextInputType.name,
+                                      cursorColor:
+                                          Theme.of(context).primaryColor,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _titleAr = newValue;
+                                        });
+                                      },
+                                      validator: (String input) {
+                                        if (input.isEmpty) {
                                           return getTranslated(
                                               context, 'required');
                                         }
-                                      }
-                                      return null;
-                                    },
+                                        return null;
+                                      },
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: (height) * 0.01,
-                            ),
-                            Row(
-                              children: [
-                                //Production date picking
-                                DatePickingWidget(
-                                  textHint: _proDateHint +
-                                      allProducstList
+                                ],
+                              ),
+                              // English title text field
+                              Row(
+                                children: [
+                                  Container(
+                                    height: (height) * 0.08,
+                                    width: (width) * 0.5,
+                                    child: TextFormField(
+                                      initialValue: allProducstList
                                           .where((p) => (p.id == _id))
                                           .toList()[0]
-                                          .proDate,
-                                  pickedDate: _proDate,
-                                  pickerFunction: _proDatePicker,
-                                ),
-                                //Expiration date picking
-                                DatePickingWidget(
-                                  textHint: _expDateHint +
-                                      allProducstList
+                                          .titleEn,
+                                      decoration: InputDecoration(
+                                        hintText: _titleEnHint,
+                                      ),
+                                      keyboardType: TextInputType.name,
+                                      cursorColor:
+                                          Theme.of(context).primaryColor,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _titleEn = newValue;
+                                        });
+                                      },
+                                      validator: (String input) {
+                                        if (input.isEmpty) {
+                                          return getTranslated(
+                                              context, 'required');
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  //Type dropdown list
+                                  DropdownWidget(
+                                    hint: _typeHint,
+                                    initValue: getTranslated(
+                                        context,
+                                        allProducstList
+                                            .where((p) => (p.id == _id))
+                                            .toList()[0]
+                                            .type),
+                                    newValue: _dropdownValueType,
+                                    getValue: _getType,
+                                    valuesList: _typeList,
+                                  ),
+                                  SizedBox(
+                                    width: (width) * 0.03,
+                                  ),
+                                  //Price text field
+                                  Container(
+                                    height: (height) * 0.08,
+                                    width: (width) * 0.17,
+                                    child: TextFormField(
+                                      initialValue: allProducstList
                                           .where((p) => (p.id == _id))
                                           .toList()[0]
-                                          .expDate,
-                                  pickedDate: _expDate,
-                                  pickerFunction: _expDatePicker,
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                //Quantity text field
-                                Row(
-                                  children: <Widget>[
-                                    Container(
-                                      width: (width) * 0.39,
-                                      height: (height) * 0.1,
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(15),
-                                          )),
-                                      child: Center(
-                                        child: TextFormField(
-                                          initialValue: allProducstList
-                                              .where((p) => (p.id == _id))
-                                              .toList()[0]
-                                              .quantity
-                                              .toString()
-                                              .substring(
-                                                  0,
-                                                  allProducstList
-                                                      .where(
-                                                          (p) => (p.id == _id))
-                                                      .toList()[0]
-                                                      .quantity
-                                                      .toString()
-                                                      .indexOf('.')),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _quantity = value;
-                                            });
-                                          },
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            labelText: '  ' +
-                                                getTranslated(
-                                                    context, 'quantity'),
-                                            border: InputBorder.none,
+                                          .price
+                                          .toString(),
+                                      decoration: InputDecoration(
+                                        hintText: _priceHint,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      cursorColor:
+                                          Theme.of(context).primaryColor,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp("[0-9.]")),
+                                      ],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _price = newValue;
+                                        });
+                                      },
+                                      validator: (String input) {
+                                        if (input.isEmpty) {
+                                          return getTranslated(
+                                              context, 'required');
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  //Unit dropdown list
+                                  DropdownWidget(
+                                    hint: _priceDescriptionHint,
+                                    initValue: getTranslated(
+                                        context,
+                                        allProducstList
+                                            .where((p) => (p.id == _id))
+                                            .toList()[0]
+                                            .priceDescription),
+                                    newValue: _dropdownValueUnit,
+                                    getValue: _getUnit,
+                                    valuesList: _priceDescriptionList,
+                                  ),
+                                  SizedBox(
+                                    width: (width) * 0.03,
+                                  ),
+                                  //weight text field
+                                  Container(
+                                    height: (height) * 0.08,
+                                    width: (width) * 0.17,
+                                    child: TextFormField(
+                                      initialValue: allProducstList
+                                          .where((p) => (p.id == _id))
+                                          .toList()[0]
+                                          .weight
+                                          .toString(),
+                                      decoration: InputDecoration(
+                                        hintText: _weightHint,
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      cursorColor:
+                                          Theme.of(context).primaryColor,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp("[0-9.]")),
+                                      ],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _weight = newValue;
+                                        });
+                                      },
+                                      validator: (String input) {
+                                        if (input.isEmpty) {
+                                          if (_dropdownValueUnit == 'perBox' ||
+                                              _dropdownValueUnit == 'perBag') {
+                                            return getTranslated(
+                                                context, 'required');
+                                          }
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: (height) * 0.01,
+                              ),
+                              Row(
+                                children: [
+                                  //Production date picking
+                                  DatePickingWidget(
+                                    textHint: _proDateHint +
+                                        allProducstList
+                                            .where((p) => (p.id == _id))
+                                            .toList()[0]
+                                            .proDate,
+                                    pickedDate: _proDate,
+                                    pickerFunction: _proDatePicker,
+                                  ),
+                                  //Expiration date picking
+                                  DatePickingWidget(
+                                    textHint: _expDateHint +
+                                        allProducstList
+                                            .where((p) => (p.id == _id))
+                                            .toList()[0]
+                                            .expDate,
+                                    pickedDate: _expDate,
+                                    pickerFunction: _expDatePicker,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  //Quantity text field
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        width: (width) * 0.39,
+                                        height: (height) * 0.1,
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[300],
+                                            borderRadius: BorderRadius.all(
+                                              Radius.circular(15),
+                                            )),
+                                        child: Center(
+                                          child: TextFormField(
+                                            initialValue: allProducstList
+                                                .where((p) => (p.id == _id))
+                                                .toList()[0]
+                                                .quantity
+                                                .toString()
+                                                .substring(
+                                                    0,
+                                                    allProducstList
+                                                        .where((p) =>
+                                                            (p.id == _id))
+                                                        .toList()[0]
+                                                        .quantity
+                                                        .toString()
+                                                        .indexOf('.')),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _quantity = value;
+                                              });
+                                            },
+                                            textAlign: TextAlign.center,
+                                            decoration: InputDecoration(
+                                              labelText: '  ' +
+                                                  getTranslated(
+                                                      context, 'quantity'),
+                                              border: InputBorder.none,
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.allow(
+                                                  RegExp("[0-9]")),
+                                            ],
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            validator: (String input) {
+                                              if (input.isEmpty) {
+                                                return getTranslated(
+                                                    context, 'required');
+                                              }
+                                              return null;
+                                            },
                                           ),
-                                          keyboardType: TextInputType.number,
-                                          inputFormatters: [
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp("[0-9]")),
-                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  //Save button
+                                  GestureDetector(
+                                    onTap: _updateProduct,
+                                    child: Container(
+                                      height: (height) * 0.1,
+                                      width: (width) * 0.4,
+                                      decoration: BoxDecoration(
+                                        color: _currentColor == null
+                                            ? allProducstList
+                                                .where((p) => (p.id == _id))
+                                                .toList()[0]
+                                                .color
+                                            : _currentColor,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          getTranslated(context, 'save'),
                                           style: TextStyle(
                                             color: Colors.black,
-                                            fontSize: 20,
                                             fontWeight: FontWeight.bold,
+                                            fontSize: 18,
                                           ),
-                                          validator: (String input) {
-                                            if (input.isEmpty) {
-                                              return getTranslated(
-                                                  context, 'required');
-                                            }
-                                            return null;
-                                          },
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                //Save button
-                                GestureDetector(
-                                  onTap: _updateProduct,
-                                  child: Container(
-                                    height: (height) * 0.1,
-                                    width: (width) * 0.4,
-                                    decoration: BoxDecoration(
-                                      color: _currentColor == null
-                                          ? allProducstList
-                                              .where((p) => (p.id == _id))
-                                              .toList()[0]
-                                              .color
-                                          : _currentColor,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(20),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        getTranslated(context, 'save'),
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ],
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             )
           : Center(
-              child: Text('Loading...'),
+              child: Text(getTranslated(context, 'loading')),
             ),
     );
   }

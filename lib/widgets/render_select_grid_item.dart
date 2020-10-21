@@ -23,11 +23,6 @@ class RenderSelectGridItem extends StatelessWidget {
       '/editProductsScreen',
       arguments: {
         'id': id,
-        // 'title': title,
-        // 'price': price,
-        // 'priceDescription': priceDescription,
-        // 'imageUrl': imageUrl,
-        // 'color': color,
       },
     );
   }

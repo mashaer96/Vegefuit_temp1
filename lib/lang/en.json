@@ -40,12 +40,21 @@
   "perBag": "Per Bag",
   "perBox": "Per Box",
 
+  "loading": "Loading ...",
   "successfullAdd": "Product added successfully",
   "successfullLogin": "Login Successful",
   "uploadingImage": "Uploading product, please wait ...",
   "AddStockSuccess": "Products added into the stock successfully",
   "AddStockFail": "Error: Make sure quantities are not 0",
   "required": "Required",
+  "outOfStuck": "Out of Stuck",
 
+  "emptyStock": "Your Stock is empty!",
+  "emptyState": "seems like you don't have items here.",
+
+  "otp": "Verification code",
+  "login": "Login",
+  "verify": "Verify",
+  "logout": "Logout",
   "save": "Save"
 }

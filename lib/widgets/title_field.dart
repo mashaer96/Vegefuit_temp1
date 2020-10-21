@@ -4,8 +4,7 @@ import '../localization/demo_localization.dart';
 class TitleFieldWidget extends StatelessWidget {
   final String titleHint;
   final TextEditingController titleController;
-  
-  
+
   TitleFieldWidget({this.titleHint, this.titleController});
 
   @override

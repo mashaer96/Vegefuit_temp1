@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../localization/demo_localization.dart';
-import '../widgets/render_grid_item.dart';
+import '../widgets/render_select_grid_item.dart';
 import '../models/product.dart';
 import '../models/is_arabic.dart';
 
-class DataSearch extends SearchDelegate<String> {
+class AdminDataSearch extends SearchDelegate<String> {
   List<Product> _productsList;
   List<Product> _historyList = [];
 
-  DataSearch(this._productsList) : super(keyboardType: TextInputType.name);
+  AdminDataSearch(this._productsList) : super(keyboardType: TextInputType.name);
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -54,7 +54,7 @@ class DataSearch extends SearchDelegate<String> {
     return GridView.builder(
       padding: const EdgeInsets.all(10.0),
       itemCount: _suggestionList.length,
-      itemBuilder: (ctx, i) => RenderGridItem(
+      itemBuilder: (ctx, i) => RenderSelectGridItem(
         id: _suggestionList[i].id,
         title: isArabic(context)
             ? _suggestionList[i].titleAr

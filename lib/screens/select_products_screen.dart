@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 // import 'package:sliding_up_panel/sliding_up_panel.dart';
 // import 'package:vegefruit/widgets/collapsed_panel.dart';
 import '../localization/demo_localization.dart';
-import '../models/data_search.dart';
+import '../models/admin_data_search.dart';
 import '../models/product.dart';
 import '../models/laguages.dart';
 import '../models/is_arabic.dart';
@@ -111,7 +111,8 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
                 icon: new Icon(Icons.search),
                 onPressed: () {
                   showSearch(
-                      context: context, delegate: DataSearch(allProducstList));
+                      context: context,
+                      delegate: AdminDataSearch(allProducstList));
                 }),
         actions: _selectionMode
             ? _buttons
@@ -334,7 +335,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
                         ),
                       )
                     : Center(
-                        child: Text('Loading...'),
+                        child: Text(getTranslated(context, 'loading')),
                       ),
               ),
             ],

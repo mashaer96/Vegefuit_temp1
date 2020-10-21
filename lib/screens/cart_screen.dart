@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../localization/demo_localization.dart';
 import 'package:vegefruit/models/is_arabic.dart';
-import 'package:vegefruit/widgets/hedear.dart';
+import 'package:vegefruit/widgets/hedear_with_back.dart';
 import 'package:vegefruit/widgets/list_item.dart';
 
 class CartScreen extends StatefulWidget {
@@ -21,6 +21,32 @@ class _CartScreenState extends State<CartScreen> {
   final imageUrl = 'assets/images/watermelon.png';
   final color = Color(0xFFFF3B4A);
 
+  // Widget _outOfStuck() {
+  //   return Container(
+  //     width: (MediaQuery.of(context).size.width) * 0.23,
+  //     height: (MediaQuery.of(context).size.height -
+  //             MediaQuery.of(context).padding.top) *
+  //         0.15,
+  //     decoration: BoxDecoration(
+  //         color: Colors.black38,
+  //         borderRadius: BorderRadius.all(
+  //           Radius.circular(20),
+  //         )),
+  //     child: Padding(
+  //       padding: const EdgeInsets.only(top: 25, left: 18),
+  //       child: Text(
+  //         getTranslated(context, 'outOfStuck'),
+  //         style: TextStyle(
+  //           color: Theme.of(context).canvasColor,
+  //           fontWeight: FontWeight.bold,
+  //           fontSize: 17,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +56,7 @@ class _CartScreenState extends State<CartScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Header('shoppingCart'),
+            HeaderWithBack('shoppingCart'),
             Container(
               child: Expanded(
                 child: ListView.builder(
@@ -151,3 +177,27 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 }
+// Stack(
+    //           children: <Widget>[
+    //             GestureDetector(
+    //               child: Container(
+    //                 width: (width) * 0.23,
+    //                 height: (height) * 0.15,
+    //                 decoration: BoxDecoration(
+    //                   color: widget.color,
+    //                   borderRadius: BorderRadius.all(
+    //                     Radius.circular(20),
+    //                   ),
+    //                 ),
+    //                 child: Padding(
+    //                   padding: const EdgeInsets.all(10.0),
+    //                   child: Image.network(
+    //                     widget.imageUrl,
+    //                   ),
+    //                 ),
+    //               ),
+    //               onTap: () => _showItem(context),
+    //             ),
+    //             widget.quantity == 0 ? _outOfStuck() : Container(),
+    //           ],
+    //         ),

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vegefruit/localization/demo_localization.dart';
 
-import '../models/product.dart';
 import '../services/database.dart';
-//import '../screens/add_product.screen.dart';
+import '../localization/demo_localization.dart';
+import '../models/product.dart';
 import '../screens/orders_screen.dart';
 import '../screens/select_products_screen.dart';
 import '../screens/stock_screen.dart';
@@ -22,7 +21,6 @@ class _AdminTabsScreenState extends State<AdminTabsScreen> {
     StreamProvider<List<Product>>.value(
         value: Database().products, child: StockScreen()),
     OrdersScreen(),
-    //AddProductScreen(),
   ];
 
   int _selectedScreenIndex = 0;
@@ -35,13 +33,14 @@ class _AdminTabsScreenState extends State<AdminTabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final height =
+        mq.size.height - AppBar().preferredSize.height - mq.padding.top;
+
     return Scaffold(
       body: _screens[_selectedScreenIndex],
       bottomNavigationBar: SizedBox(
-        height: (MediaQuery.of(context).size.height -
-                AppBar().preferredSize.height -
-                MediaQuery.of(context).padding.top) *
-            0.11,
+        height: height * 0.11,
         child: BottomNavigationBar(
           onTap: _selectScreen,
           elevation: 20,
@@ -68,12 +67,6 @@ class _AdminTabsScreenState extends State<AdminTabsScreen> {
                 getTranslated(context, 'orders').toString(),
               ),
             ),
-            // BottomNavigationBarItem(
-            //   icon: Icon(Icons.add),
-            //   title: Text(
-            //     getTranslated(context, 'newProduct').toString(),
-            //   ),
-            // ),
           ],
         ),
       ),

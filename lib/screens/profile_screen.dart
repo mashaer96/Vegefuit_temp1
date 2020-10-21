@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import '../localization/demo_localization.dart';
+import '../services/auth.dart';
 
-import '../widgets/hedear.dart';
+import '../widgets/hedear_with_back.dart';
 
 class ProfileScreen extends StatelessWidget {
   @override
@@ -12,7 +14,18 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Header("profile"),
+            HeaderWithBack("profile"),
+            //logout
+            Center(
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  Auth().signOut();
+                },
+                label: Text(getTranslated(context, 'logout')),
+                heroTag: '/loginScreen',
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            ),
           ],
         ),
       ),

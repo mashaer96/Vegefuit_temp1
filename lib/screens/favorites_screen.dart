@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/hedear.dart';
+import '../widgets/hedear_with_back.dart';
 
 class FavoritesScreen extends StatelessWidget {
   @override
@@ -12,7 +12,7 @@ class FavoritesScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Header('favorites'),
+            HeaderWithBack('favorites'),
           ],
         ),
       ),
