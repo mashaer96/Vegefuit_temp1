@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../models/user.dart';
 import '../models/product.dart';
 
 class Database {
   final CollectionReference productsCollection =
       FirebaseFirestore.instance.collection("products");
 
-  List<Product> __productsListFromSnapshot(QuerySnapshot snapshot) {
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection("users");
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  List<Product> _productsListFromSnapshot(QuerySnapshot snapshot) {
     var list = snapshot.docs.map((doc) {
       return Product(
         id: doc.id ?? '',
@@ -36,35 +44,42 @@ class Database {
   }
 
   Stream<List<Product>> get products {
-    return productsCollection.snapshots().map(__productsListFromSnapshot);
+    return productsCollection.snapshots().map(_productsListFromSnapshot);
   }
 
-  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Future<void> userSetup(String phone) async {
+    String uid = auth.currentUser.uid;
+    usersCollection.doc(uid).set({
+      'uid': uid,
+      'phone': phone,
+      'name': '',
+      'favourites': [],
+      'cart': {},
+      'orders': [],
+    });
+  }
 
-  // Stream<List<Product>> get products {
-  //   Stream<List<Product>> productsStream = _firestore
-  //       .collection("products")
-  //       .snapshots(includeMetadataChanges: true)
-  //       .map((QuerySnapshot querySnapshot) => querySnapshot.docs
-  //           .map((DocumentSnapshot documentSnapshot) => Product(
-  //                 id: documentSnapshot.id ?? '',
-  //                 titleAr: documentSnapshot.data()['titleAr'] ?? '',
-  //                 titleEn: documentSnapshot.data()['titleEn'] ?? '',
-  //                 price: documentSnapshot.data()['price'] ?? 0.0,
-  //                 priceDescription:
-  //                     documentSnapshot.data()['price_description'] ?? '',
-  //                 image: documentSnapshot.data()['image'] ?? '',
-  //                 color: Color(int.parse(
-  //                         documentSnapshot.data()['color'].substring(6, 16))) ??
-  //                     Color(0xFF79DE64),
-  //                 type: documentSnapshot.data()['type'] ?? '',
-  //                 isFavorite: documentSnapshot.data()['is_favorite'],
-  //                 isSelected: documentSnapshot.data()['is_selected'],
-  //                 weight: documentSnapshot.data()['weight'] ?? 0.0,
-  //                 quantity: documentSnapshot.data()['quantity'] ?? 1,
-  //               ))
-  //           .toList());
+  List<UserAuth> _userFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return UserAuth(
+        uid: doc.data()['uid'],
+        phone: doc.data()['phone'],
+        name: doc.data()['name'],
+        favourites: doc.data()['favourites'],
+        cart: doc.data()['cart'],
+        orders: doc.data()['orders'],
+      );
+    }).toList();
+  }
 
-  //   return productsStream;
-  // }
+  Stream<List<UserAuth>> get users {
+    return usersCollection.snapshots().map(_userFromSnapshot);
+  }
+
+  Future<List<UserAuth>> get currentUser async {
+    final String uid = auth.currentUser.uid.toString();
+    List<UserAuth> users = await Database().users.first;
+    return users.where((user) => (user.uid == uid));
+    //return usersCollection.snapshots().map(_userFromSnapshot).where((user) => user.uid== uid).toList();
+  } // (userList) => (userList.where((user) => (user.uid == uid)))
 }

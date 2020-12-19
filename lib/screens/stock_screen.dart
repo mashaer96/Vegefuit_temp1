@@ -98,8 +98,13 @@ class _StockScreenState extends State<StockScreen> {
                               },
                             )),
                           )
-                        : EmptyStatus(
-                            message: getTranslated(context, 'emptyStock')),
+                        : Container(
+                            margin: isArabic(context)
+                                ? EdgeInsets.only(right: 70)
+                                : EdgeInsets.only(left: 70),
+                            child: EmptyStatus(
+                                message: getTranslated(context, 'emptyStock')),
+                          ),
                   ]),
             )
           : Center(

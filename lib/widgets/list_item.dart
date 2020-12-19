@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:vegefruit/localization/demo_localization.dart';
 import '../models/is_arabic.dart';
 
+// ignore: must_be_immutable
 class ListItem extends StatefulWidget {
   final String id;
   final String title;

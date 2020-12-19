@@ -1,203 +1,297 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vegefruit/models/product.dart';
+import 'package:vegefruit/widgets/cart_item.dart';
+import 'package:vegefruit/widgets/empty_status.dart';
 
 import '../localization/demo_localization.dart';
-import 'package:vegefruit/models/is_arabic.dart';
-import 'package:vegefruit/widgets/hedear_with_back.dart';
-import 'package:vegefruit/widgets/list_item.dart';
+import '../models/is_arabic.dart';
+import '../models/user.dart';
 
 class CartScreen extends StatefulWidget {
-  //final routeArgs = [{'title': 'WaterMelone', 'price': 2.45, 'priceDescription': 'Per unit', 'imageUrl': 'assets/images/watermelon.png', 'color': Color(0xFFFF3B4A),},{'title': 'WaterMelone', 'price': 2.45, 'priceDescription': 'Per unit', 'imageUrl': 'assets/images/watermelon.png', 'color': Color(0xFFFF3B4A),} ];
-  // ModalRoute.of(context).settings.arguments as Map<String, Object>;
-  //final id = routeArgs['id'];
   @override
   _CartScreenState createState() => _CartScreenState();
 }
 
 class _CartScreenState extends State<CartScreen> {
-  final id = 'p4';
-  final title = 'Watermelone';
-  final price = 2.45;
-  final priceDescription = 'Per unit';
-  final imageUrl = 'assets/images/watermelon.png';
-  final color = Color(0xFFFF3B4A);
-
-  // Widget _outOfStuck() {
-  //   return Container(
-  //     width: (MediaQuery.of(context).size.width) * 0.23,
-  //     height: (MediaQuery.of(context).size.height -
-  //             MediaQuery.of(context).padding.top) *
-  //         0.15,
-  //     decoration: BoxDecoration(
-  //         color: Colors.black38,
-  //         borderRadius: BorderRadius.all(
-  //           Radius.circular(20),
-  //         )),
-  //     child: Padding(
-  //       padding: const EdgeInsets.only(top: 25, left: 18),
-  //       child: Text(
-  //         getTranslated(context, 'outOfStuck'),
-  //         style: TextStyle(
-  //           color: Theme.of(context).canvasColor,
-  //           fontWeight: FontWeight.bold,
-  //           fontSize: 17,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-  
+  final String uid = FirebaseAuth.instance.currentUser.uid.toString();
+  bool notAllowed = false;
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final height =
+        mq.size.height - AppBar().preferredSize.height - mq.padding.top;
+    final width = mq.size.width;
+    final users = Provider.of<List<UserAuth>>(context);
+    final allProducstList = Provider.of<List<Product>>(context);
+
     return Scaffold(
-      backgroundColor: Theme.of(context).canvasColor,
-      body: Container(
-        width: (MediaQuery.of(context).size.width) * 1.0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            HeaderWithBack('shoppingCart'),
-            Container(
-              child: Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(
-                    left: 20.0,
-                    right: 20.0,
-                    bottom: 20.0,
-                  ),
-                  itemCount: 8,
-                  itemBuilder: (ctx, i) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/productDetails',
-                            arguments: {
-                              'id': id,
-                              'title': title,
-                              'price': price,
-                              'priceDescription': priceDescription,
-                              'imageUrl': imageUrl,
-                              'color': color,
-                            });
-                      },
-                      child: ListItem(
-                          title: title,
-                          price: price,
-                          color: color,
-                          imageUrl: imageUrl),
-                    );
-                  },
-                ),
-              ),
+      appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            getTranslated(context, 'shoppingCart'),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
             ),
-            Container(
-                width: (MediaQuery.of(context).size.width) * 1,
-                height: (MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top) *
-                    0.15,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          //width: (MediaQuery.of(context).size.width) * 0.3,
-                          height: (MediaQuery.of(context).size.height -
-                                  MediaQuery.of(context).padding.top) *
-                              0.03,
-                          child: FittedBox(
-                            child: Text(
-                              getTranslated(context, 'total') + ':',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10,
+          )),
+      body: (users.where((user) => (user.uid == uid)).first.cart.length != 0)
+          ? Container(
+              width: (MediaQuery.of(context).size.width) * 1.0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: (allProducstList != null)
+                        ? Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                bottom: 20.0,
                               ),
+                              itemCount: users
+                                  .where((user) => (user.uid == uid))
+                                  .first
+                                  .cart
+                                  .keys
+                                  .toList()
+                                  .length,
+                              itemBuilder: (ctx, i) {
+                                String id = users
+                                    .where((user) => (user.uid == uid))
+                                    .first
+                                    .cart
+                                    .keys
+                                    .toList()[i];
+                                var quantity = users
+                                    .where((user) => (user.uid == uid))
+                                    .first
+                                    .cart
+                                    .values
+                                    .toList()[i];
+                                double price = allProducstList
+                                    .where((p) => (p.id ==
+                                        users
+                                            .where((user) => (user.uid == uid))
+                                            .first
+                                            .cart
+                                            .keys
+                                            .toList()[i]))
+                                    .first
+                                    .price;
+                                notAllowed = allProducstList
+                                            .where((p) => (p.id == id))
+                                            .first
+                                            .quantity ==
+                                        0.0
+                                    ? true
+                                    : false;
+                                return CartItem(
+                                    id: id,
+                                    title: isArabic(context)
+                                        ? allProducstList
+                                            .where((p) => (p.id ==
+                                                users
+                                                    .where((user) =>
+                                                        (user.uid == uid))
+                                                    .first
+                                                    .cart
+                                                    .keys
+                                                    .toList()[i]))
+                                            .first
+                                            .titleAr
+                                        : allProducstList
+                                            .where((p) => (p.id ==
+                                                users
+                                                    .where((user) =>
+                                                        (user.uid == uid))
+                                                    .first
+                                                    .cart
+                                                    .keys
+                                                    .toList()[i]))
+                                            .first
+                                            .titleEn,
+                                    price: price,
+                                    quantity: quantity,
+                                    color: allProducstList
+                                        .where((p) => (p.id ==
+                                            users
+                                                .where(
+                                                    (user) => (user.uid == uid))
+                                                .first
+                                                .cart
+                                                .keys
+                                                .toList()[i]))
+                                        .first
+                                        .color,
+                                    imageUrl: allProducstList
+                                        .where((p) => (p.id == users.where((user) => (user.uid == uid)).first.cart.keys.toList()[i]))
+                                        .first
+                                        .image);
+                              },
                             ),
+                          )
+                        : Center(
+                            child: Text(getTranslated(context, 'loading')),
                           ),
+                  ),
+                  Container(
+                      width: (MediaQuery.of(context).size.width) * 1,
+                      height: (MediaQuery.of(context).size.height -
+                              MediaQuery.of(context).padding.top) *
+                          0.15,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
                         ),
-                        SizedBox(
-                          height: (MediaQuery.of(context).size.width) * 0.02,
-                        ),
-                        Container(
-                          //width: (MediaQuery.of(context).size.width) * 0.1,
-                          height: (MediaQuery.of(context).size.height -
-                                  MediaQuery.of(context).padding.top) *
-                              0.04,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                //width: (MediaQuery.of(context).size.width) * 0.3,
+                                height: (MediaQuery.of(context).size.height -
+                                        MediaQuery.of(context).padding.top) *
+                                    0.03,
+                                child: FittedBox(
+                                  child: Text(
+                                    getTranslated(context, 'total') + ':',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height:
+                                    (MediaQuery.of(context).size.width) * 0.02,
+                              ),
+                              Container(
+                                //width: (MediaQuery.of(context).size.width) * 0.1,
+                                height: (MediaQuery.of(context).size.height -
+                                        MediaQuery.of(context).padding.top) *
+                                    0.04,
+                                child: Text(
+                                  isArabic(context)
+                                      ? _getTotal(users
+                                              .where(
+                                                  (user) => (user.uid == uid))
+                                              .first
+                                              .cart) +
+                                          ' ريال'
+                                      : _getTotal(users
+                                              .where(
+                                                  (user) => (user.uid == uid))
+                                              .first
+                                              .cart) +
+                                          ' SR',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            width: (MediaQuery.of(context).size.width) * 0.5,
+                            height: (MediaQuery.of(context).size.height -
+                                    MediaQuery.of(context).padding.top) *
+                                0.1,
+                            child: RaisedButton(
+                              child: Center(
+                                child: Text(
+                                  getTranslated(context, 'orderNow'),
+                                  style: TextStyle(
+                                    color: Theme.of(context).canvasColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ),
+                              elevation: 0.0,
+                              textColor: Colors.black,
+                              color: Theme.of(context).primaryColor,
+                              disabledTextColor: Colors.white,
+                              disabledColor: Color(0xFF808080),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: BorderSide(
+                                      color: Theme.of(context).canvasColor,
+                                      width: 2)),
+                              onPressed: notAllowed ? null : () {},
+                            ),
+                          )
+                        ],
+                      ))
+                ],
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                EmptyStatus(message: getTranslated(context, 'emptyStock')),
+                SizedBox(
+                  height: height * 0.06,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: width * 0.4,
+                      height: height * 0.08,
+                      child: RaisedButton(
                           child: Text(
-                            isArabic(context)
-                                ? price.toString() + ' ريال'
-                                : price.toString() + ' SR',
+                            getTranslated(context, 'shopNow'),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                             ),
                           ),
-                        ),
-                      ],
+                          textColor: Colors.black,
+                          color: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          onPressed: () {
+                            Navigator.of(context).pushNamed('/tabScreen');
+                          }),
                     ),
-                    Container(
-                      width: (MediaQuery.of(context).size.width) * 0.5,
-                      height: (MediaQuery.of(context).size.height -
-                              MediaQuery.of(context).padding.top) *
-                          0.1,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(20),
-                        ),
-                        border: Border.all(
-                          color: Theme.of(context).canvasColor,
-                          width: 2,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          getTranslated(context, 'orderNow'),
-                          style: TextStyle(
-                            color: Theme.of(context).canvasColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    )
                   ],
-                )),
-          ],
-        ),
-      ),
+                )
+              ],
+            ),
     );
   }
+
+  String _getTotal(Map items) {
+    final users = Provider.of<List<UserAuth>>(context);
+    final allProducstList = Provider.of<List<Product>>(context);
+    var total = 0.0;
+    var quantity = [];
+    items.forEach((key, value) => quantity.add(double.parse(value.toString())));
+
+    for (int i = 0; i < quantity.length; i++) {
+      total += (quantity[i] *
+          allProducstList
+              .where((p) => (p.id ==
+                  users
+                      .where((user) => (user.uid == uid))
+                      .first
+                      .cart
+                      .keys
+                      .toList()[i]))
+              .first
+              .price);
+    }
+    return total.toString();
+  }
 }
-// Stack(
-    //           children: <Widget>[
-    //             GestureDetector(
-    //               child: Container(
-    //                 width: (width) * 0.23,
-    //                 height: (height) * 0.15,
-    //                 decoration: BoxDecoration(
-    //                   color: widget.color,
-    //                   borderRadius: BorderRadius.all(
-    //                     Radius.circular(20),
-    //                   ),
-    //                 ),
-    //                 child: Padding(
-    //                   padding: const EdgeInsets.all(10.0),
-    //                   child: Image.network(
-    //                     widget.imageUrl,
-    //                   ),
-    //                 ),
-    //               ),
-    //               onTap: () => _showItem(context),
-    //             ),
-    //             widget.quantity == 0 ? _outOfStuck() : Container(),
-    //           ],
-    //         ),

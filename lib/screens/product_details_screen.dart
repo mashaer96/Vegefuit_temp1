@@ -1,12 +1,13 @@
-import 'dart:core';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/rendering.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../localization/demo_localization.dart';
 import '../models/is_arabic.dart';
 import '../models/product.dart';
+import '../models/user.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   @override
@@ -14,27 +15,9 @@ class ProductDetailsScreen extends StatefulWidget {
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  final String uid = FirebaseAuth.instance.currentUser.uid.toString();
   int _quantity = 1;
-
-  void _add() {
-    setState(() {
-      _quantity++;
-    });
-  }
-
-  void _remove() {
-    if (_quantity <= 0) {
-      setState(() {
-        _quantity = 0;
-      });
-    }
-    if (_quantity > 0)
-      setState(() {
-        _quantity--;
-      });
-  }
-
-  void _addToCart() {}
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +29,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ModalRoute.of(context).settings.arguments as Map<String, Object>;
     final String _id = routeArgs['id'];
     final allProducstList = Provider.of<List<Product>>(context);
+    final favourites = Provider.of<List<UserAuth>>(context);
 
     return Scaffold(
+      key: _key,
       backgroundColor: (allProducstList != null)
           ? allProducstList.where((p) => (p.id == _id)).toList()[0].color
           : null,
@@ -331,17 +316,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       ),
                                     ),
                                     child: IconButton(
-                                        icon: Icon(
-                                          //fovoriteList.contains(id) ? Icons.favorite : Icons.favorite_border,
-                                          Icons.favorite_border,
-                                          color: //fovoriteList.contains(id) ? Colors.red :
-                                              allProducstList
-                                                  .where((p) => (p.id == _id))
-                                                  .toList()[0]
-                                                  .color,
-                                          size: 36,
-                                        ),
-                                        onPressed: null),
+                                      icon: Icon(
+                                        favourites
+                                                .where(
+                                                    (user) => (user.uid == uid))
+                                                .first
+                                                .favourites
+                                                .contains(_id)
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: allProducstList
+                                            .where((p) => (p.id == _id))
+                                            .toList()[0]
+                                            .color,
+                                        size: 36,
+                                      ),
+                                      onPressed: () {
+                                        favourites
+                                                .where(
+                                                    (user) => (user.uid == uid))
+                                                .first
+                                                .favourites
+                                                .contains(_id)
+                                            ? _removeFavourites(_id)
+                                            : _addFavourites(_id);
+                                      },
+                                    ),
                                   ),
                                   SizedBox(
                                     width: 16,
@@ -370,7 +370,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           .toList()[0]
                                           .color,
                                       disabledTextColor: Colors.white,
-                                      disabledColor: Colors.black38,
+                                      disabledColor: Color(0xFF808080),
                                       elevation: 0.0,
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -380,7 +380,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               .toList()[0]
                                               .isOutOfStuck
                                           ? null
-                                          : _addToCart,
+                                          : () {
+                                              favourites
+                                                      .where((user) =>
+                                                          (user.uid == uid))
+                                                      .first
+                                                      .cart
+                                                      .containsKey(_id)
+                                                  ? _addToCart(
+                                                      _id,
+                                                      favourites
+                                                          .where((user) =>
+                                                              (user.uid == uid))
+                                                          .first
+                                                          .cart[_id])
+                                                  : _addToCart(_id, 0);
+                                            },
                                     ),
                                   ),
                                 ],
@@ -398,5 +413,59 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: Text(getTranslated(context, 'loading')),
             ),
     );
+  }
+
+  void _add() {
+    setState(() {
+      _quantity++;
+    });
+  }
+
+  void _remove() {
+    if (_quantity <= 1) {
+      setState(() {
+        _quantity = 0;
+      });
+    }
+    if (_quantity > 1)
+      setState(() {
+        _quantity--;
+      });
+  }
+
+  Future<void> _removeFavourites(String item) async {
+    try {
+      await (FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'favourites': FieldValue.arrayRemove([item])
+      }));
+    } catch (ex) {
+      print(ex);
+      _key.currentState.showSnackBar((SnackBar(content: Text(ex.toString()))));
+    }
+  }
+
+  Future<void> _addFavourites(String item) async {
+    try {
+      await (FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'favourites': FieldValue.arrayUnion([item])
+      }));
+    } catch (ex) {
+      print(ex);
+      _key.currentState.showSnackBar((SnackBar(content: Text(ex.toString()))));
+    }
+  }
+
+  Future<void> _addToCart(String item, var qnt) async {
+    try {
+      var newQuantity = qnt + _quantity;
+      // using cart. prevent the replacement of the exsisting items when using update()
+      await (FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({'cart.$item': newQuantity}));
+    } catch (ex) {
+      print(ex);
+      _key.currentState.showSnackBar((SnackBar(content: Text(ex.toString()))));
+    }
   }
 }

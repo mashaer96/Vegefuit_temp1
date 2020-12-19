@@ -14,6 +14,7 @@ class HeaderWithoutBack extends StatelessWidget {
     return Material(
       elevation: 10,
       child: Container(
+        height: (height) * 0.14,
         color: Theme.of(context).primaryColor,
         child: Padding(
           padding: const EdgeInsets.only(

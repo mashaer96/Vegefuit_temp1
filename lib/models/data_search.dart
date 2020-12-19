@@ -51,25 +51,32 @@ class DataSearch extends SearchDelegate<String> {
             ? p.titleAr.startsWith(query)
             : p.titleEn.startsWith(query)))
         .toList();
-    return GridView.builder(
-      padding: const EdgeInsets.all(10.0),
-      itemCount: _suggestionList.length,
-      itemBuilder: (ctx, i) => RenderGridItem(
-        id: _suggestionList[i].id,
-        title: isArabic(context)
-            ? _suggestionList[i].titleAr
-            : _suggestionList[i].titleEn,
-        price: _suggestionList[i].price,
-        priceDescription:
-            getTranslated(context, _suggestionList[i].priceDescription),
-        color: _suggestionList[i].color,
-        imageUrl: _suggestionList[i].image,
-      ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1 / 1.5,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 20,
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 24.0),
+      margin: EdgeInsets.only(top: 20),
+      child: GridView.builder(
+        padding: const EdgeInsets.all(10.0),
+        itemCount: _suggestionList.length,
+        itemBuilder: (ctx, i) => RenderGridItem(
+          id: _suggestionList[i].id,
+          title: isArabic(context)
+              ? _suggestionList[i].titleAr
+              : _suggestionList[i].titleEn,
+          price: _suggestionList[i].price,
+          priceDescription:
+              getTranslated(context, _suggestionList[i].priceDescription),
+          color: _suggestionList[i].color,
+          imageUrl: _suggestionList[i].image,
+          isSelected: _suggestionList[i].isSelected,
+          quantity: _suggestionList[i].quantity,
+        ),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1 / 1.5,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+        ),
       ),
     );
   }

@@ -76,7 +76,6 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       key: _key,
       appBar: appBar,
       backgroundColor: Color.fromRGBO(255, 245, 229, 1),
-      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
           width: double.infinity,

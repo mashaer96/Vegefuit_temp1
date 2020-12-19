@@ -26,6 +26,12 @@ class ProfileScreen extends StatelessWidget {
                 backgroundColor: Theme.of(context).primaryColor,
               ),
             ),
+            FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pushNamed('/adminTabsScreen');
+                          },
+                          child: Text('Admin'),
+                        ),
           ],
         ),
       ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../services/auth.dart';
-import 'package:flutter/services.dart';
-import 'package:vegefruit/localization/demo_localization.dart';
+// import '../services/database.dart';
+import '../localization/demo_localization.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -116,7 +116,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             : Text(getTranslated(context, 'verify')),
                         onPressed: () {
                           codeSent
-                              ? Auth().signInWithOTP(smsCode, verificationId)
+                              ? Auth().signInWithOTP(
+                                  smsCode, verificationId, phoneNo)
                               : verifyPhone(phoneNo);
                         }),
                   ),
@@ -131,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> verifyPhone(phoneNo) async {
     final PhoneVerificationCompleted verified = (AuthCredential authResult) {
-      Auth().signIn(authResult);
+      Auth().signIn(authResult, phoneNo);
     };
 
     final PhoneVerificationFailed verificationfailed =

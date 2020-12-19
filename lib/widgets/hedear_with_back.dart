@@ -52,7 +52,7 @@ class HeaderWithBack extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: (width) * 0.13,
+            width: (width) * 0.19,
           ),
           Text(
             getTranslated(context, title),

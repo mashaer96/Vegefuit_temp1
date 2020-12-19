@@ -23,8 +23,8 @@ class AddProductScreen extends StatefulWidget {
 
 class _AddProductScreenState extends State<AddProductScreen> {
   final formKey = GlobalKey<FormState>();
-  GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   TextEditingController _newTitleArController = TextEditingController(text: '');
   TextEditingController _newTitleEnController = TextEditingController(text: '');

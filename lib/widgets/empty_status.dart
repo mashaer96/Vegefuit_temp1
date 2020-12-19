@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vegefruit/localization/demo_localization.dart';
-import 'package:vegefruit/models/is_arabic.dart';
+// import 'package:vegefruit/models/is_arabic.dart';
 
 class EmptyStatus extends StatelessWidget {
   final String message;
@@ -14,9 +14,7 @@ class EmptyStatus extends StatelessWidget {
 
     return Container(
       width: (MediaQuery.of(context).size.width) * 0.6,
-      margin: isArabic(context)
-          ? EdgeInsets.only(top: 120, right: 70)
-          : EdgeInsets.only(top: 120, left: 70),
+      margin: EdgeInsets.only(top: 120),
       child: Column(
         children: <Widget>[
           Image.asset('assets/images/empty-states.png'),

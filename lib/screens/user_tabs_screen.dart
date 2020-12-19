@@ -18,9 +18,12 @@ class _TabsScreenState extends State<TabsScreen> {
   final List<Widget> _screens = [
     StreamProvider<List<Product>>.value(
         value: Database().products, child: ProductOverviewScreen()),
-    FavoritesScreen(),
-    CartScreen(),
-    ProfileScreen(),
+    StreamProvider<List<Product>>.value(
+        value: Database().products, child: FavoritesScreen()),
+    StreamProvider<List<Product>>.value(
+        value: Database().products, child: CartScreen()),
+    StreamProvider<List<Product>>.value(
+        value: Database().products, child: ProfileScreen()),
   ];
 
   int _selectedScreenIndex = 0;
