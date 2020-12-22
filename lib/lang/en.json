@@ -51,6 +51,9 @@
 
   "emptyStock": "Your Stock is empty!",
   "emptyState": "seems like you don't have items here.",
+  "stockLimit" : "Stock Limit",
+  "stockMassage" : "The quantity in stock is not enough",
+  "OkButton" : "OK",
 
   "otp": "Verification code",
   "login": "Login",

@@ -100,12 +100,12 @@ class _CartItemState extends State<CartItem> {
     Alert(
       context: context,
       type: AlertType.info,
-      title: 'Stock Limit',
-      desc: 'This is my message.',
+      title: getTranslated(context, 'stockLimit'),
+      desc: getTranslated(context, 'stockMassage'),
       buttons: [
         DialogButton(
           child: Text(
-            "OK",
+            getTranslated(context, 'OkButton'),
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: () => Navigator.pop(context),
